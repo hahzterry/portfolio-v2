@@ -11,9 +11,10 @@ interface RevealProps {
 }
 
 export default function Reveal({ children, delay, className = '', as = 'div' }: RevealProps) {
-  // Cast to a generic element type — sidesteps polymorphic ref typing
-  // friction without losing the runtime flexibility of the `as` prop.
-  const Tag = as as React.ElementType
+  // Pragmatic cast — the polymorphic `as` prop is correct at runtime but
+  // would require generics + complex ref forwarding to satisfy strict TS.
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const Tag = as as any
   const ref = useRef<HTMLElement>(null)
 
   useEffect(() => {
