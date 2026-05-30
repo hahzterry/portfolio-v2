@@ -158,8 +158,15 @@ export default function DateMenu() {
           </Fragment>
         ))}
 
-        <div className="dm-rise" style={S.fleuronWrap}>
-          <Fleuron />
+        <div className="dm-rise" style={S.timeGap} aria-hidden>
+          <span style={S.timeLine} />
+        </div>
+
+        <div className="dm-rise" style={S.tease}>
+          <p style={S.teaseLabel}>For Later</p>
+          <p className="dm-breathe" style={S.teaseLine}>
+            Something I&rsquo;ve been wanting to ask you&hellip;
+          </p>
         </div>
       </main>
     </div>
@@ -247,6 +254,20 @@ const CSS = `
     0%   { background-position: 130% 0; }
     100% { background-position: -30% 0; }
   }
+  /* A slow, anticipatory glow — like a held breath before a question. */
+  .dm-breathe {
+    animation: dm-breathe 4.8s ease-in-out infinite;
+  }
+  @keyframes dm-breathe {
+    0%, 100% {
+      opacity: 0.5;
+      text-shadow: 0 0 0 rgba(176, 141, 79, 0);
+    }
+    50% {
+      opacity: 1;
+      text-shadow: 0 0 22px rgba(176, 141, 79, 0.35);
+    }
+  }
   @media (prefers-reduced-motion: reduce) {
     .dm-rise { opacity: 1; transform: none; transition: none; }
     .dm-rise.is-visible { transition: none; }
@@ -259,6 +280,7 @@ const CSS = `
       background: none;
       -webkit-text-fill-color: #2e241a;
     }
+    .dm-breathe { animation: none; opacity: 1; }
   }
 `
 
@@ -477,5 +499,41 @@ const S: Record<string, React.CSSProperties> = {
   fleuronRule: {
     flex: 1,
     height: '1px',
+  },
+  timeGap: {
+    width: '100%',
+    display: 'flex',
+    justifyContent: 'center',
+  },
+  timeLine: {
+    width: '1px',
+    height: '84px',
+    background: `linear-gradient(180deg, transparent, ${GOLD} 50%, transparent)`,
+  },
+  tease: {
+    display: 'flex',
+    flexDirection: 'column',
+    alignItems: 'center',
+    marginTop: '22px',
+  },
+  teaseLabel: {
+    fontFamily: 'var(--font-cormorant)',
+    fontWeight: 600,
+    fontSize: '11px',
+    letterSpacing: '0.42em',
+    textTransform: 'uppercase',
+    color: GOLD_SOFT,
+    marginBottom: '14px',
+    paddingLeft: '0.42em',
+  },
+  teaseLine: {
+    fontFamily: 'var(--font-cormorant)',
+    fontStyle: 'italic',
+    fontWeight: 500,
+    fontSize: 'clamp(19px, 5.2vw, 25px)',
+    lineHeight: 1.4,
+    textAlign: 'center',
+    color: INK,
+    maxWidth: '300px',
   },
 }
