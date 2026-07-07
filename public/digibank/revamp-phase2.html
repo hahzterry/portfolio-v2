@@ -1364,14 +1364,20 @@ function toggleRecipients(row) {
 const themeAssets = {
   default: { login: 'splash-bg.png', loginFit: 'contain', beranda: 'hero-banner.png' },
   mrt:     { login: 'MRT-login.png',  loginFit: 'contain', beranda: 'mrt-beranda.png' },
-  disney:  { login: 'splash-bg.png', loginFit: 'contain', beranda: 'hero-banner.png' } // swap when Disney art is added
+  disney:  { login: 'disney-login.png', loginFit: 'cover', beranda: 'disney-beranda.png' }
 };
 function applyTheme(t) {
   const a = themeAssets[t] || themeAssets.default;
   const sharp = document.querySelector('#splash .splash-sharp');
   const blur  = document.querySelector('#splash .splash-blur');
   const hero  = document.querySelector('#home .hero');
-  if (sharp) sharp.src = a.login;
+  if (sharp) {
+    sharp.src = a.login;
+    const cover = a.loginFit === 'cover';
+    sharp.style.objectFit = cover ? 'cover' : '';
+    sharp.style.height = cover ? '100%' : '';
+    sharp.style.top = cover ? '0' : '';
+  }
   if (blur) blur.style.backgroundImage = "url('" + a.login + "')";
   if (hero) hero.style.backgroundImage = "url('" + a.beranda + "')";
 }
