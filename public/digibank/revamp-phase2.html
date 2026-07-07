@@ -340,8 +340,12 @@ body {
 }
 
 .profile-sec {
-  display: flex; align-items: center; padding: 20px 16px; gap: 16px; background: white;
+  display: flex; align-items: center; padding: 20px 16px; gap: 16px; background: #fff;
+  position: relative; overflow: hidden;
 }
+.profile-sec::before { content: ''; position: absolute; inset: 0; z-index: 0; background-image: var(--profile-img, none); background-size: cover; background-position: center; }
+.profile-sec::after  { content: ''; position: absolute; inset: 0; z-index: 0; background: var(--profile-scrim, transparent); }
+.profile-sec > * { position: relative; z-index: 1; }
 .avatar {
   width: 62px; height: 62px; border-radius: 50%;
   background: #f0f0f0;
@@ -360,7 +364,7 @@ body {
   font-size: 9px; color: #555; box-shadow: 0 1px 5px rgba(0,0,0,.2); z-index: 2;
   cursor: pointer;
 }
-.profile-name { font-size: 16px; font-weight: 700; color: #1a1a1a; margin-bottom: 8px; }
+.profile-name { font-size: 16px; font-weight: 700; color: var(--profile-text, #1a1a1a); margin-bottom: 8px; }
 .logout-red {
   background: #CC1111; color: white; border: none; border-radius: 20px;
   padding: 6px 14px; font-size: 12px; font-weight: 700; cursor: pointer;
@@ -1380,6 +1384,14 @@ function applyTheme(t) {
   }
   if (blur) blur.style.backgroundImage = "url('" + a.login + "')";
   if (hero) hero.style.backgroundImage = "url('" + a.beranda + "')";
+  // themed Lainnya profile header
+  const phone = document.querySelector('.phone');
+  if (phone) {
+    const themed = t !== 'default';
+    phone.style.setProperty('--profile-img', themed ? "url('" + a.beranda + "')" : 'none');
+    phone.style.setProperty('--profile-scrim', themed ? 'linear-gradient(to right, rgba(0,0,0,.55), rgba(0,0,0,.2))' : 'transparent');
+    phone.style.setProperty('--profile-text', themed ? '#fff' : '#1a1a1a');
+  }
 }
 
 function selectTheme(t) {
