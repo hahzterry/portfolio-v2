@@ -31,6 +31,7 @@ export default function IslandNav() {
   const caseStudyTitle = CASE_STUDY_TITLES[caseStudySlug] ?? 'Case study'
 
   const isDateMenu = pathname === '/date-menu'
+  const isDigibank = pathname === '/digibank-personalize-enhancement'
 
   const [activeId, setActiveId] = useState<LinkId>('intro')
   const linkRefs    = useRef<(HTMLAnchorElement | null)[]>([])
@@ -119,7 +120,7 @@ export default function IslandNav() {
     setActiveId(id)
   }, [])
 
-  if (isDateMenu) return null
+  if (isDateMenu || isDigibank) return null
 
   // ─── Case-study variant ──────────────────────────────────────────────
   if (isCaseStudy) {

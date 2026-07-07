@@ -1,0 +1,1117 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>DBS digibank</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+
+body {
+  background: #c8c8c8;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Segoe UI', sans-serif;
+}
+
+/* ─── PHONE FRAME ─── */
+.phone {
+  width: 393px;
+  height: 852px;
+  background: #fff;
+  border-radius: 54px;
+  overflow: hidden;
+  box-shadow: 0 40px 100px rgba(0,0,0,.5), 0 0 0 14px #111, 0 0 0 16px #333;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+}
+
+/* ─── SCREENS ─── */
+.screen {
+  display: none;
+  width: 100%;
+  height: 100%;
+  flex-direction: column;
+  overflow: hidden;
+  position: absolute;
+  top: 0; left: 0;
+  background: #fff;
+  transition: opacity .18s ease;
+}
+.screen.active { display: flex; opacity: 1; }
+
+/* status bar removed */
+
+/* ─── COMMON TOP BAR ─── */
+.topbar {
+  display: flex;
+  align-items: center;
+  padding: 14px 14px 10px;
+  gap: 8px;
+  border-bottom: 1px solid #f0f0f0;
+  flex-shrink: 0;
+  background: white;
+}
+.ti {
+  width: 36px; height: 36px;
+  display: flex; align-items: center; justify-content: center;
+  cursor: pointer; color: #333; font-size: 18px; flex-shrink: 0;
+  border-radius: 50%;
+  transition: background .15s;
+}
+.ti:active { background: #f5f5f5; }
+.logo {
+  flex: 1; text-align: center;
+  font-size: 15px; color: #1a1a1a;
+  display: flex; align-items: center; justify-content: center; gap: 2px;
+}
+.logo-x { color: #CC1111; font-size: 17px; font-weight: 900; margin-right: 2px; }
+.logo-dbs { font-weight: 800; }
+.logo-sub { font-weight: 400; font-size: 13px; }
+.logout-btn {
+  background: transparent; border: 1.5px solid #333;
+  border-radius: 20px; padding: 5px 11px;
+  font-size: 11px; font-weight: 700; cursor: pointer; color: #333;
+  display: flex; align-items: center; gap: 4px; white-space: nowrap;
+  font-family: inherit;
+}
+.logout-btn:active { background: #f5f5f5; }
+
+/* ─── SCROLL WRAPPER ─── */
+.scroll { flex: 1; overflow-y: auto; overflow-x: hidden; -webkit-overflow-scrolling: touch; }
+.scroll::-webkit-scrollbar { display: none; }
+
+/* ─── BOTTOM NAV ─── */
+.bnav {
+  display: flex; background: #1C1C1E;
+  padding: 10px 0 20px; flex-shrink: 0;
+}
+.ni {
+  flex: 1; display: flex; flex-direction: column;
+  align-items: center; gap: 3px; cursor: pointer; padding: 4px 0;
+}
+.ni .ic { font-size: 21px; color: rgba(255,255,255,.4); }
+.ni .lb { font-size: 10px; color: rgba(255,255,255,.4); font-weight: 500; }
+.ni.on .ic, .ni.on .lb { color: #fff; }
+.ni:active .ic, .ni:active .lb { color: rgba(255,255,255,.7); }
+
+/* ══════════════════════════════
+   SPLASH SCREEN
+══════════════════════════════ */
+#splash {
+  background: #111;
+}
+.splash-img {
+  flex: 1;
+  background: #000 url('splash-bg.png') center center / contain no-repeat;
+  position: relative;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+}
+
+.splash-text {
+  padding: 0 26px 20px;
+  z-index: 2;
+}
+.splash-title {
+  color: white; font-size: 28px; font-weight: 800; line-height: 1.22; margin-bottom: 10px;
+}
+.splash-title em { color: #C9820A; font-style: normal; }
+.splash-disc {
+  font-size: 10px; color: rgba(255,255,255,.4); line-height: 1.5;
+}
+.splash-chat-btn {
+  position: absolute; top: 18px; right: 18px;
+  width: 36px; height: 36px; background: rgba(255,255,255,.1);
+  border-radius: 10px; display: flex; align-items: center; justify-content: center;
+  color: white; font-size: 16px; cursor: pointer;
+}
+
+/* splash actions */
+.splash-actions {
+  display: flex; justify-content: space-around;
+  padding: 18px 8px 10px;
+  border-top: 1px solid rgba(255,255,255,.1);
+  background: #1C1C1E;
+}
+.sa {
+  display: flex; flex-direction: column; align-items: center;
+  gap: 8px; cursor: pointer; min-width: 72px; padding: 0 4px;
+}
+.sa-icon {
+  width: 54px; height: 54px;
+  background: rgba(255,255,255,.07);
+  border: 1px solid rgba(255,255,255,.1);
+  border-radius: 16px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 20px; color: rgba(255,255,255,.8);
+  transition: background .15s;
+}
+.sa-icon.red { background: rgba(204,17,17,.18); border-color: rgba(204,17,17,.3); }
+.sa:active .sa-icon { background: rgba(255,255,255,.14); }
+.sa span { color: rgba(255,255,255,.85); font-size: 11px; text-align: center; line-height: 1.3; }
+
+.promo-strip {
+  background: linear-gradient(135deg, #E65C00, #F9A825);
+  padding: 14px 22px; cursor: pointer;
+}
+.promo-tag { font-size: 10px; font-weight: 800; color: rgba(255,255,255,.8); letter-spacing: 1.2px; margin-bottom: 4px; }
+.promo-copy { font-size: 13px; color: white; font-weight: 600; line-height: 1.35; }
+
+/* ══════════════════════════════
+   HOME / BERANDA
+══════════════════════════════ */
+.hero {
+  background: url('hero-banner.png') center center / cover no-repeat;
+  position: relative; overflow: hidden;
+  height: 190px; flex-shrink: 0;
+}
+.hero-close {
+  position: absolute; top: 10px; right: 14px;
+  color: rgba(255,255,255,.85); font-size: 18px; cursor: pointer; z-index: 2;
+  width: 28px; height: 28px; display: flex; align-items: center; justify-content: center;
+  background: rgba(0,0,0,.25); border-radius: 50%;
+}
+
+/* quick actions row */
+.qa-row {
+  display: flex; padding: 14px 10px;
+  overflow-x: auto; background: white;
+  border-bottom: 8px solid #f3f3f3;
+  gap: 0;
+}
+.qa-row::-webkit-scrollbar { display: none; }
+.qa {
+  display: flex; flex-direction: column; align-items: center;
+  gap: 7px; cursor: pointer; min-width: 70px; padding: 0 4px; flex-shrink: 0;
+}
+.qa-ic {
+  width: 52px; height: 52px;
+  border: 1.5px solid #e0e0e0; border-radius: 14px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 20px; color: #CC1111; background: white;
+  transition: transform .12s;
+}
+.qa:active .qa-ic { transform: scale(.93); }
+.qa span { font-size: 11px; text-align: center; color: #333; line-height: 1.3; font-weight: 500; }
+
+/* account sections */
+.acc-sec {
+  background: white; border-bottom: 1px solid #ebebeb; padding: 14px 16px;
+}
+.acc-head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px; }
+.acc-title {
+  font-size: 15px; font-weight: 700; color: #1a1a1a;
+  padding-left: 10px; border-left: 3px solid #CC1111;
+}
+.acc-chev { color: #bbb; font-size: 13px; cursor: pointer; }
+.acc-row2 { display: flex; justify-content: space-between; align-items: center; padding: 6px 0; }
+.acc-lbl { font-size: 13px; color: #666; }
+.bal { font-size: 13px; color: #bbb; letter-spacing: 2px; transition: all .2s; }
+.bal.shown { color: #1a1a1a; font-weight: 700; letter-spacing: 0; }
+
+.inv-row {
+  display: flex; align-items: center; gap: 10px;
+  padding: 8px 0; border-bottom: 1px solid #f5f5f5;
+}
+.inv-ic {
+  width: 32px; height: 32px; background: #fde8e8;
+  border-radius: 8px; display: flex; align-items: center; justify-content: center;
+  color: #CC1111; font-size: 13px; flex-shrink: 0; font-weight: 900;
+}
+.inv-name { font-size: 13px; font-weight: 700; color: #1a1a1a; }
+.inv-num { font-size: 11px; color: #999; }
+
+/* do more */
+.do-more { background: #f3f3f3; padding: 16px; }
+.dm-lbl { font-size: 11px; font-weight: 800; color: #777; letter-spacing: 1.2px; margin-bottom: 12px; }
+.dm-card {
+  background: white; border-radius: 14px; padding: 15px;
+  display: flex; align-items: flex-start; gap: 14px;
+  margin-bottom: 10px; box-shadow: 0 2px 10px rgba(0,0,0,.06);
+  cursor: pointer;
+}
+.dm-card-ic {
+  width: 58px; height: 58px; border-radius: 12px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 28px; flex-shrink: 0;
+}
+.dm-cat { font-size: 10px; font-weight: 800; color: #999; letter-spacing: 1px; margin-bottom: 4px; }
+.dm-title { font-size: 13px; font-weight: 600; color: #1a1a1a; line-height: 1.4; margin-bottom: 6px; }
+.dm-link { font-size: 12px; color: #009688; font-weight: 800; cursor: pointer; }
+
+/* product grid */
+.prod-grid {
+  display: flex; flex-wrap: wrap;
+  padding: 16px 10px; background: white;
+  gap: 8px; border-bottom: 8px solid #f3f3f3;
+}
+.pi {
+  display: flex; flex-direction: column; align-items: center;
+  gap: 7px; width: calc(25% - 6px); cursor: pointer;
+}
+.pi-wrap { position: relative; }
+.pi-ic {
+  width: 52px; height: 52px; border: 1.5px solid #e0e0e0;
+  border-radius: 14px; display: flex; align-items: center; justify-content: center;
+  font-size: 20px; color: #CC1111; background: white;
+  transition: transform .12s;
+}
+.pi:active .pi-ic { transform: scale(.93); }
+.baru {
+  position: absolute; top: -8px; left: 50%; transform: translateX(-50%);
+  background: #CC1111; color: white; font-size: 9px; font-weight: 800;
+  padding: 2px 6px; border-radius: 10px; letter-spacing: .5px;
+  white-space: nowrap;
+}
+.pi span { font-size: 11px; text-align: center; color: #333; line-height: 1.3; font-weight: 500; }
+
+.last-login {
+  text-align: center; padding: 18px 16px 28px; background: white;
+}
+.last-login-ic {
+  width: 32px; height: 32px; background: #fde8e8;
+  border-radius: 8px; display: inline-flex; align-items: center; justify-content: center;
+  color: #CC1111; font-size: 14px; font-weight: 900; margin-bottom: 8px;
+}
+.last-login-txt { font-size: 12px; color: #999; }
+
+/* ══════════════════════════════
+   LAINNYA
+══════════════════════════════ */
+.search-topbar {
+  display: flex; align-items: center; padding: 14px 14px 10px;
+  gap: 8px; background: white; border-bottom: 1px solid #f0f0f0; flex-shrink: 0;
+}
+.search-pill {
+  flex: 1; display: flex; align-items: center; gap: 8px;
+  background: #f5f5f5; border-radius: 10px; padding: 9px 12px;
+  color: #aaa; font-size: 13px; cursor: pointer;
+}
+
+.profile-sec {
+  display: flex; align-items: center; padding: 20px 16px; gap: 16px; background: white;
+}
+.avatar {
+  width: 62px; height: 62px; border-radius: 50%;
+  background: linear-gradient(135deg, #f0f0f0, #e0e0e0);
+  position: relative; flex-shrink: 0; overflow: hidden;
+}
+.av-body {
+  position: absolute; bottom: 0; left: 50%; transform: translateX(-50%);
+  width: 44px; height: 36px; background: #CC1111; border-radius: 50% 50% 0 0;
+}
+.av-head {
+  position: absolute; top: 11px; left: 50%; transform: translateX(-50%);
+  width: 24px; height: 24px; background: #333; border-radius: 50%; z-index: 1;
+}
+.av-edit {
+  position: absolute; bottom: 0; right: 0;
+  width: 22px; height: 22px; background: white;
+  border-radius: 50%; display: flex; align-items: center; justify-content: center;
+  font-size: 9px; color: #555; box-shadow: 0 1px 5px rgba(0,0,0,.2); z-index: 2;
+  cursor: pointer;
+}
+.profile-name { font-size: 16px; font-weight: 700; color: #1a1a1a; margin-bottom: 8px; }
+.logout-red {
+  background: #CC1111; color: white; border: none; border-radius: 20px;
+  padding: 6px 14px; font-size: 12px; font-weight: 700; cursor: pointer;
+  display: inline-flex; align-items: center; gap: 5px; font-family: inherit;
+}
+.logout-red:active { background: #aa0d0d; }
+
+.sec-lbl {
+  background: #f3f3f3; padding: 8px 16px;
+  font-size: 11px; font-weight: 800; color: #777; letter-spacing: 1.2px;
+}
+.icon-grid {
+  display: flex; flex-wrap: wrap;
+  padding: 14px 10px; background: white; gap: 10px;
+  border-bottom: 1px solid #ebebeb;
+}
+.ig-item {
+  display: flex; flex-direction: column; align-items: center;
+  gap: 7px; width: calc(33.33% - 7px); cursor: pointer;
+}
+.ig-box {
+  width: 58px; height: 58px; border: 1.5px solid #e0e0e0;
+  border-radius: 14px; display: flex; align-items: center; justify-content: center;
+  font-size: 22px; color: #555; background: white;
+  position: relative; transition: transform .12s;
+}
+.ig-item:active .ig-box { transform: scale(.93); }
+.free-badge {
+  font-size: 11px; font-weight: 800; color: #CC1111;
+  border: 2px solid #CC1111; border-radius: 50%;
+  width: 32px; height: 32px; display: flex; align-items: center; justify-content: center;
+}
+.ig-item > span { font-size: 11px; text-align: center; color: #333; line-height: 1.3; font-weight: 500; }
+
+/* ══════════════════════════════
+   TRANSFER
+══════════════════════════════ */
+.from-card {
+  background: white; border-radius: 14px; padding: 16px; margin-bottom: 14px;
+}
+.from-lbl { font-size: 12px; color: #999; margin-bottom: 10px; }
+.from-row {
+  display: flex; align-items: center; gap: 12px;
+  padding: 10px 0; border-bottom: 1px solid #f0f0f0; cursor: pointer;
+}
+.from-ic {
+  width: 42px; height: 42px; background: #fde8e8; border-radius: 12px;
+  display: flex; align-items: center; justify-content: center; color: #CC1111;
+  font-size: 15px; font-weight: 900; flex-shrink: 0;
+}
+.from-name { font-size: 14px; font-weight: 700; color: #1a1a1a; }
+.from-num { font-size: 12px; color: #999; }
+
+.tx-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 14px; }
+.tx-item {
+  display: flex; flex-direction: column; align-items: center;
+  gap: 8px; cursor: pointer;
+}
+.tx-ic {
+  width: 60px; height: 60px; background: #fff0f0;
+  border-radius: 16px; display: flex; align-items: center; justify-content: center;
+  font-size: 24px; color: #CC1111; transition: transform .12s;
+}
+.tx-item:active .tx-ic { transform: scale(.93); }
+.tx-item span { font-size: 11px; text-align: center; color: #333; font-weight: 500; line-height: 1.3; }
+
+/* ══════════════════════════════
+   BAYAR & BELI
+══════════════════════════════ */
+.bayar-head { background: #CC1111; padding: 14px 16px 18px; }
+.bayar-head h2 { font-size: 20px; font-weight: 800; color: white; }
+
+.bayar-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 1px; background: #ebebeb; }
+.bi {
+  background: white; padding: 16px 8px;
+  display: flex; flex-direction: column; align-items: center; gap: 8px; cursor: pointer;
+}
+.bi:active { background: #fafafa; }
+.bi-ic {
+  width: 48px; height: 48px; background: #fff0f0; border-radius: 13px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 20px; color: #CC1111;
+}
+.bi span { font-size: 11px; text-align: center; color: #333; line-height: 1.3; font-weight: 500; }
+
+/* ══════════════════════════════
+   INVESTASI
+══════════════════════════════ */
+.inv-head {
+  background: linear-gradient(135deg, #1a3a5c, #0d2340);
+  padding: 14px 16px 32px;
+}
+.inv-head h2 { font-size: 20px; font-weight: 800; color: white; margin-bottom: 2px; }
+.inv-head p { font-size: 12px; color: rgba(255,255,255,.6); }
+
+.port-card {
+  margin: -18px 16px 0; background: white;
+  border-radius: 16px; padding: 18px;
+  box-shadow: 0 6px 24px rgba(0,0,0,.14); margin-bottom: 0;
+}
+.port-lbl { font-size: 12px; color: #999; margin-bottom: 4px; }
+.port-val { font-size: 20px; font-weight: 700; color: #1a1a1a; letter-spacing: 2px; }
+.port-chg { font-size: 12px; color: #22c55e; margin-top: 4px; font-weight: 600; }
+
+.inv-prods { padding: 16px; }
+.inv-prod-title { font-size: 12px; font-weight: 800; color: #777; letter-spacing: 1px; margin-bottom: 12px; }
+.inv-list { background: white; border-radius: 14px; overflow: hidden; }
+.inv-item {
+  display: flex; align-items: center; padding: 14px 16px; gap: 12px;
+  border-bottom: 1px solid #f5f5f5; cursor: pointer;
+}
+.inv-item:last-child { border-bottom: none; }
+.inv-item:active { background: #fafafa; }
+.inv-item-ic { width: 44px; height: 44px; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 20px; flex-shrink: 0; }
+.inv-item-info { flex: 1; }
+.inv-item-name { font-size: 14px; font-weight: 600; color: #1a1a1a; }
+.inv-item-sub { font-size: 12px; color: #999; display: flex; align-items: center; gap: 4px; }
+.inv-item-chev { color: #ccc; }
+
+/* ══════════════════════════════
+   TRANSFER PAGE (recipient list)
+══════════════════════════════ */
+.tr-add { display: flex; align-items: center; gap: 14px; padding: 18px 16px; background: #fff; cursor: pointer; }
+.tr-add-ic {
+  width: 38px; height: 38px; border: 1.5px solid #cfcfcf; border-radius: 10px;
+  display: flex; align-items: center; justify-content: center; color: #9a9a9a; font-size: 17px; flex-shrink: 0;
+}
+.tr-add-label { flex: 1; font-size: 16px; color: #1a1a1a; }
+.tr-list { background: #fff; }
+.tr-row { position: relative; display: flex; align-items: center; gap: 16px; padding: 18px 16px; background: #fff; cursor: pointer; }
+.tr-row:active { background: #fafafa; }
+.tr-list .tr-row:not(:last-child)::after { content: ''; position: absolute; left: 52px; right: 0; bottom: 0; height: 1px; background: #eee; }
+.tr-row-ic { width: 26px; text-align: center; color: #555; font-size: 19px; flex-shrink: 0; }
+.tr-row-label { flex: 1; font-size: 16px; color: #1a1a1a; }
+.tr-count { background: #eaeaea; color: #777; font-size: 13px; font-weight: 600; padding: 2px 12px; border-radius: 12px; min-width: 34px; text-align: center; }
+.chev-down { color: #bbb; font-size: 14px; transition: transform .2s; }
+.tr-row.expanded .chev-down { transform: rotate(180deg); }
+.tr-sublist { display: none; }
+.tr-sublist.open { display: block; }
+.tr-sub { position: relative; display: flex; align-items: center; gap: 14px; padding: 14px 16px; background: #fff; cursor: pointer; }
+.tr-sub:active { background: #fafafa; }
+.tr-sublist .tr-sub:not(:last-child)::after { content: ''; position: absolute; left: 70px; right: 0; bottom: 0; height: 1px; background: #eee; }
+.tr-sub-av { width: 52px; height: 52px; border-radius: 50%; overflow: hidden; background: #eee; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+.tr-sub-av img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.tr-sub-avwrap { display: flex; flex-direction: column; align-items: center; gap: 6px; flex-shrink: 0; }
+.tr-sub-info { flex: 1; min-width: 0; }
+.tr-sub-name { font-size: 17px; font-weight: 600; color: #1a1a1a; }
+.tr-sub-bank { font-size: 13px; color: #888; margin-top: 1px; }
+.tr-sub-acc { font-size: 13px; color: #888; }
+.tr-sub-badge { display: inline-flex; align-items: center; gap: 4px; padding: 2px 7px; border-radius: 10px; font-size: 9px; font-weight: 700; white-space: nowrap; }
+.tr-sub-i { width: 28px; height: 28px; border-radius: 50%; border: 1.5px solid #ccc; color: #aaa; font-size: 14px; font-style: italic; display: flex; align-items: center; justify-content: center; flex-shrink: 0; font-family: Georgia, serif; }
+.tr-dispute { text-align: center; padding: 28px 20px 30px; background: #f3f3f3; }
+.tr-dispute-q { font-size: 12px; font-weight: 700; letter-spacing: .4px; color: #9a9a9a; margin-bottom: 16px; }
+.tr-dispute-btn { background: #7a8794; color: #fff; border: none; font-family: inherit; font-size: 13px; font-weight: 700; letter-spacing: .5px; padding: 12px 22px; border-radius: 24px; cursor: pointer; }
+.tr-dispute-btn:active { background: #6a7682; }
+
+/* ══════════════════════════════
+   RESPONSIVE — FULL SCREEN ON MOBILE
+══════════════════════════════ */
+/* ══════════════════════════════
+   HISTORI TRANSAKSI
+══════════════════════════════ */
+.hist-header { background: #F5A623; padding: 14px 16px 24px; flex-shrink: 0; }
+.hist-top { display: flex; align-items: center; }
+.hist-title { flex: 1; text-align: center; font-size: 17px; font-weight: 700; color: #1a1a1a; }
+.hist-av { width: 92px; height: 92px; border-radius: 50%; margin: 16px auto 12px; border: 3px solid #fff; overflow: hidden; display: flex; align-items: center; justify-content: center; font-size: 32px; font-weight: 700; color: #fff; background: #f7a8b0; }
+.hist-av img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.hist-name { text-align: center; font-size: 22px; font-weight: 700; color: #1a1a1a; margin-bottom: 14px; }
+.hist-transfer-btn { display: block; margin: 0 auto; background: #2e2e2e; color: #fff; border: none; font-family: inherit; font-size: 14px; font-weight: 700; letter-spacing: .5px; padding: 12px 34px; border-radius: 24px; cursor: pointer; }
+.hist-transfer-btn:active { background: #444; }
+.hist-rincian { display: flex; align-items: center; justify-content: space-between; background: #fff; padding: 18px 16px; font-size: 16px; color: #1a1a1a; cursor: pointer; margin-bottom: 8px; }
+.hist-date { padding: 16px 16px 8px; font-size: 12px; font-weight: 700; color: #999; letter-spacing: .5px; }
+.hist-tx { background: #fff; padding: 16px; border-top: 1px solid #eee; }
+.hist-tx-title { font-size: 17px; font-weight: 600; color: #1a1a1a; }
+.hist-tx-sub { font-size: 14px; color: #aaa; margin-top: 2px; }
+.hist-tx-amt { text-align: right; font-size: 19px; font-weight: 700; color: #1a1a1a; margin-top: 8px; }
+/* ══════════════════════════════
+   INVESTASI (tab redesign)
+══════════════════════════════ */
+.sect-head { display: flex; justify-content: space-between; align-items: center; padding: 18px 16px 10px; }
+.sect-lbl { font-size: 12px; font-weight: 700; color: #8a94a0; letter-spacing: .8px; }
+.sect-all { font-size: 13px; color: #8a94a0; display: flex; align-items: center; gap: 5px; cursor: pointer; }
+.hcards { display: flex; gap: 12px; overflow-x: auto; padding: 0 16px 4px; }
+.hcards::-webkit-scrollbar { display: none; }
+.fund-card { flex: 0 0 72%; background: #fff; border-radius: 12px; padding: 20px 16px; display: flex; align-items: center; gap: 14px; }
+.fund-ic { font-size: 30px; flex-shrink: 0; }
+.fund-name { font-size: 16px; font-weight: 700; color: #1a1a1a; line-height: 1.35; }
+.bond-card { flex: 0 0 58%; background: #fff; border-radius: 12px; padding: 18px 16px; }
+.bond-name { font-size: 19px; font-weight: 700; color: #1a1a1a; margin-bottom: 12px; }
+.bond-row { display: flex; justify-content: space-between; align-items: baseline; font-size: 13px; color: #8a94a0; margin-top: 8px; }
+.bond-val { font-size: 17px; font-weight: 700; color: #1a1a1a; }
+.bond-val .pct { font-size: 11px; font-weight: 600; color: #8a94a0; }
+.idr-card { background: #fff; border-radius: 12px; margin: 0 16px; padding: 14px 16px; display: flex; align-items: center; gap: 12px; }
+
+/* ══════════════════════════════
+   BAYAR & BELI (tab redesign)
+══════════════════════════════ */
+.bb-grid { display: flex; flex-wrap: wrap; gap: 12px; padding: 16px; }
+.bb-tile { width: calc(25% - 9px); aspect-ratio: 1 / 1.05; border-radius: 10px; position: relative; overflow: hidden; cursor: pointer; }
+.bb-tile .bb-art { position: absolute; top: 8px; right: 8px; font-size: 19px; color: rgba(255,255,255,.55); }
+.bb-tile span { position: absolute; left: 9px; bottom: 8px; font-size: 12px; font-weight: 600; color: #fff; line-height: 1.25; text-shadow: 0 1px 2px rgba(0,0,0,.3); }
+.bb-promo { margin: 0 16px; background: linear-gradient(120deg, #f4f3f5, #e7e7ec); border-radius: 12px; padding: 30px 22px; position: relative; overflow: hidden; }
+.bb-promo-title { font-size: 25px; font-weight: 800; color: #27313b; }
+.bb-promo-sub { font-size: 15px; color: #4a5560; margin-top: 2px; }
+.bb-promo .deco { position: absolute; font-size: 28px; }
+.txn-list { background: #fff; margin-top: 10px; }
+.txn-row { display: flex; gap: 14px; padding: 16px; border-bottom: 1px solid #eee; }
+.txn-logo { width: 54px; height: 54px; border-radius: 50%; border: 1px solid #eee; background: #fff; display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 900; flex-shrink: 0; }
+.txn-body { flex: 1; min-width: 0; }
+.txn-top { display: flex; align-items: center; justify-content: space-between; }
+.txn-name { font-size: 18px; font-weight: 700; color: #1a1a1a; }
+.txn-chev { color: #ccc; font-size: 14px; }
+.txn-sub { font-size: 14px; color: #9aa3ad; margin-top: 2px; }
+.txn-amt { text-align: right; font-size: 19px; font-weight: 700; color: #1a1a1a; margin-top: 8px; }
+.txn-amt .rp { font-size: 13px; color: #8a94a0; font-weight: 600; margin-right: 4px; }
+.txn-refill { text-align: right; color: #CC1111; font-weight: 700; font-size: 13px; margin-top: 4px; cursor: pointer; }
+
+/* ══════════════════════════════
+   DIGIBOT CHAT
+══════════════════════════════ */
+#digibot { background: #ededf0; }
+.bot-top { display: flex; align-items: center; padding: 16px; background: #fff; border-bottom: 1px solid #eee; flex-shrink: 0; }
+.bot-title { flex: 1; text-align: center; font-size: 18px; font-weight: 700; color: #1a1a1a; }
+.bot-close { width: 36px; text-align: right; font-size: 20px; color: #555; cursor: pointer; }
+.bot-bubble { background: #fff; border-radius: 14px; padding: 14px 16px; font-size: 15px; line-height: 1.6; color: #222; margin-bottom: 12px; max-width: 94%; }
+.bot-link { color: #CC1111; text-decoration: underline; cursor: pointer; }
+.bot-cards { display: flex; gap: 10px; overflow-x: auto; margin-bottom: 12px; }
+.bot-cards::-webkit-scrollbar { display: none; }
+.bot-card { flex: 0 0 88%; background: #fff; border-radius: 12px; overflow: hidden; }
+.bot-card-h { padding: 14px 16px; font-weight: 700; color: #1b3a5c; border-bottom: 1px solid #eee; font-size: 15px; }
+.bot-q { padding: 14px 16px; color: #e0473d; text-align: center; font-size: 15px; border-bottom: 1px solid #f0f0f0; cursor: pointer; line-height: 1.4; }
+.bot-input { display: flex; align-items: center; gap: 14px; padding: 12px 16px 24px; background: #fff; flex-shrink: 0; }
+.bot-menu { font-size: 20px; color: #666; cursor: pointer; }
+.bot-field { flex: 1; background: #eef0f3; border-radius: 22px; padding: 12px 18px; color: #9aa3ad; font-size: 15px; }
+@media (max-width: 440px) {
+  body { background: #fff; align-items: flex-start; }
+  .phone { width: 100vw; height: 100vh; border-radius: 0; box-shadow: none; border: none; }
+}
+</style>
+</head>
+<body>
+<div class="phone">
+
+<!-- ══════════ SPLASH ══════════ -->
+<div class="screen active" id="splash">
+  <div class="splash-img">
+    <div class="splash-chat-btn"><i class="fa-regular fa-comment"></i></div>
+  </div>
+
+  <div style="background:#1C1C1E;">
+    <div class="splash-actions">
+      <div class="sa" onclick="go('home')">
+        <div class="sa-icon red"><i class="fa-solid fa-right-to-bracket fa-lg"></i></div>
+        <span>Login</span>
+      </div>
+      <div class="sa" onclick="go('transfer')">
+        <div class="sa-icon"><i class="fa-solid fa-arrow-right-arrow-left"></i></div>
+        <span>Transfer<br>Rupiah</span>
+      </div>
+      <div class="sa">
+        <div class="sa-icon"><i class="fa-solid fa-qrcode"></i></div>
+        <span>QRIS</span>
+      </div>
+      <div class="sa">
+        <div class="sa-icon"><i class="fa-solid fa-dollar-sign"></i></div>
+        <span>Cek Kurs</span>
+      </div>
+    </div>
+    <div class="promo-strip">
+      <div class="promo-tag">PROMO</div>
+      <div class="promo-copy">Cek beragam promo digibank yang buat kamu makin Live more. Bank less!</div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════ HOME ══════════ -->
+<div class="screen" id="home">
+  <div class="topbar">
+    <div class="ti"><i class="fa-regular fa-bell"></i></div>
+    <div class="ti" id="eye-btn" onclick="toggleBal()">
+      <i class="fa-regular fa-eye" id="eye-ic"></i>
+    </div>
+    <div class="logo">
+      <span class="logo-x">✕</span>
+      <span class="logo-dbs">DBS</span>
+      <span class="logo-sub">&nbsp;digibank</span>
+    </div>
+    <div class="ti"><i class="fa-regular fa-comment"></i></div>
+    <button class="logout-btn" onclick="go('splash')">
+      <i class="fa-solid fa-arrow-right-from-bracket" style="font-size:10px;"></i> LOG OUT
+    </button>
+  </div>
+
+  <div class="scroll">
+    <!-- Hero -->
+    <div class="hero">
+      <span class="hero-close">✕</span>
+    </div>
+
+    <!-- Quick actions -->
+    <div class="qa-row">
+      <div class="qa"><div class="qa-ic"><i class="fa-solid fa-qrcode"></i></div><span>QRIS</span></div>
+      <div class="qa" onclick="go('transfer')"><div class="qa-ic"><i class="fa-solid fa-arrow-right-arrow-left"></i></div><span>Transfer<br>Rupiah</span></div>
+      <div class="qa"><div class="qa-ic"><i class="fa-solid fa-globe"></i></div><span>Transfer<br>Valas</span></div>
+      <div class="qa"><div class="qa-ic"><i class="fa-solid fa-seedling"></i></div><span>LiveBetter</span></div>
+      <div class="qa"><div class="qa-ic"><i class="fa-solid fa-circle-plus"></i></div><span>Digibank+</span></div>
+      <div class="qa" onclick="go('bayar')"><div class="qa-ic"><i class="fa-solid fa-wallet"></i></div><span>Bayar</span></div>
+    </div>
+
+    <div style="height:8px;background:#f3f3f3;"></div>
+
+    <!-- Tabungan -->
+    <div class="acc-sec">
+      <div class="acc-head">
+        <span class="acc-title">Tabungan dan Giro</span>
+        <i class="fa-solid fa-chevron-down acc-chev"></i>
+      </div>
+      <div class="acc-row2">
+        <span class="acc-lbl">Total saldo</span>
+        <span class="bal" data-val="Rp 8.450.000">••••••</span>
+      </div>
+    </div>
+
+    <!-- Investasi -->
+    <div class="acc-sec">
+      <div class="acc-head">
+        <span class="acc-title">Investasi</span>
+        <i class="fa-solid fa-chevron-right acc-chev" onclick="go('investasi')"></i>
+      </div>
+      <div class="inv-row">
+        <div class="inv-ic"><i class="fa-solid fa-xmark"></i></div>
+        <div>
+          <div class="inv-name">DANIEL ARIEL MULJONO</div>
+          <div class="inv-num">IN000295174</div>
+        </div>
+      </div>
+      <div class="acc-row2" style="margin-top:6px;">
+        <span class="acc-lbl">Total</span>
+        <span class="bal" data-val="Rp 15.200.000">••••••</span>
+      </div>
+    </div>
+
+    <!-- Kartu Kredit -->
+    <div class="acc-sec">
+      <div class="acc-head">
+        <span class="acc-title">Kartu Kredit</span>
+        <i class="fa-solid fa-chevron-down acc-chev"></i>
+      </div>
+      <div class="acc-row2">
+        <span class="acc-lbl">Jumlah pemakaian</span>
+        <span class="bal" data-val="Rp 3.100.000">••••••</span>
+      </div>
+    </div>
+
+    <!-- Do More -->
+    <div class="do-more">
+      <div class="dm-lbl">DO MORE WITH DIGIBANK</div>
+      <div class="dm-card">
+        <div class="dm-card-ic" style="background:#FFF3E0;">💰</div>
+        <div>
+          <div class="dm-cat">DEPOSITO</div>
+          <div class="dm-title">Pake digibank kamu bisa buka deposito dengan instan</div>
+          <div class="dm-link">BUKA DEPOSITO</div>
+        </div>
+      </div>
+      <div class="dm-card">
+        <div class="dm-card-ic" style="background:#FCE4EC;">📈</div>
+        <div>
+          <div class="dm-cat">REKSA DANA</div>
+          <div class="dm-title">Mulai investasi reksa dana dari Rp10.000 saja</div>
+          <div class="dm-link">MULAI INVESTASI</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Product grid -->
+    <div class="prod-grid">
+      <div class="pi"><div class="pi-wrap"><div class="pi-ic"><i class="fa-solid fa-building-columns"></i></div></div><span>Deposito</span></div>
+      <div class="pi"><div class="pi-wrap"><div class="pi-ic"><i class="fa-solid fa-file-invoice-dollar"></i></div></div><span>Obligasi</span></div>
+      <div class="pi"><div class="pi-wrap"><div class="pi-ic"><i class="fa-solid fa-chart-bar"></i></div></div><span>Reksa Dana</span></div>
+      <div class="pi"><div class="pi-wrap"><div class="pi-ic"><i class="fa-solid fa-money-check-dollar"></i></div></div><span>Cashline</span></div>
+      <div class="pi">
+        <div class="pi-wrap">
+          <div class="pi-ic"><i class="fa-solid fa-umbrella"></i></div>
+          <span class="baru">BARU</span>
+        </div>
+        <span>Asuransi</span>
+      </div>
+    </div>
+
+    <!-- Last login -->
+    <div class="last-login">
+      <div class="last-login-ic"><i class="fa-solid fa-xmark"></i></div>
+      <div class="last-login-txt">Login terakhir: 21 Mei 2026, 19:22 (WIB)</div>
+    </div>
+  </div>
+
+  <div class="bnav">
+    <div class="ni on"><i class="fa-solid fa-house ic"></i><span class="lb">Beranda</span></div>
+    <div class="ni" onclick="go('investasi')"><i class="fa-solid fa-chart-line ic"></i><span class="lb">Investasi</span></div>
+    <div class="ni" onclick="go('transfer')"><i class="fa-solid fa-arrow-right-arrow-left ic"></i><span class="lb">Transfer</span></div>
+    <div class="ni" onclick="go('bayar')"><i class="fa-solid fa-basket-shopping ic"></i><span class="lb">Bayar &amp; Beli</span></div>
+    <div class="ni" onclick="go('lainnya')"><i class="fa-solid fa-border-all ic"></i><span class="lb">Lainnya</span></div>
+  </div>
+</div>
+
+<!-- ══════════ LAINNYA ══════════ -->
+<div class="screen" id="lainnya">
+  <div class="search-topbar">
+    <div class="ti"><i class="fa-regular fa-bell"></i></div>
+    <div class="search-pill">
+      <i class="fa-solid fa-magnifying-glass" style="font-size:13px;"></i>
+      <span>Cari Lebih Lanjut</span>
+    </div>
+    <div class="ti"><i class="fa-regular fa-comment"></i></div>
+  </div>
+
+  <div class="scroll">
+    <!-- Profile -->
+    <div class="profile-sec">
+      <div class="avatar">
+        <div class="av-body"></div>
+        <div class="av-head"></div>
+        <div class="av-edit"><i class="fa-solid fa-pen" style="font-size:8px;"></i></div>
+      </div>
+      <div>
+        <div class="profile-name">danielariel</div>
+        <button class="logout-red" onclick="go('splash')">
+          <i class="fa-solid fa-arrow-right-from-bracket" style="font-size:11px;"></i> LOG OUT
+        </button>
+      </div>
+    </div>
+
+    <div class="sec-lbl">AKUN</div>
+    <div class="icon-grid">
+      <div class="ig-item">
+        <div class="ig-box"><i class="fa-regular fa-user"></i></div>
+        <span>Lihat Profil</span>
+      </div>
+      <div class="ig-item">
+        <div class="ig-box"><i class="fa-regular fa-eye"></i></div>
+        <span>Intip Saldo</span>
+      </div>
+      <div class="ig-item">
+        <div class="ig-box"><i class="fa-regular fa-face-smile-beam"></i></div>
+        <span>Face ID</span>
+      </div>
+      <div class="ig-item">
+        <div class="ig-box" style="position:relative;">
+          <span class="baru">BARU</span>
+          <div class="free-badge">FREE</div>
+        </div>
+        <span>Kuota Gratis<br>Biaya Admin</span>
+      </div>
+    </div>
+
+    <div class="sec-lbl">BUKA BARU</div>
+    <div class="icon-grid">
+      <div class="ig-item"><div class="ig-box"><i class="fa-solid fa-star" style="color:#CC1111;font-size:20px;"></i></div><span>Tabungan<br>Maxi</span></div>
+      <div class="ig-item"><div class="ig-box"><i class="fa-solid fa-credit-card"></i></div><span>Kartu Kredit</span></div>
+      <div class="ig-item"><div class="ig-box"><i class="fa-solid fa-money-check-dollar"></i></div><span>Cashline</span></div>
+      <div class="ig-item"><div class="ig-box"><i class="fa-solid fa-hand-holding-dollar"></i></div><span>Pinjaman</span></div>
+      <div class="ig-item"><div class="ig-box"><i class="fa-solid fa-building-columns"></i></div><span>Deposito</span></div>
+      <div class="ig-item"><div class="ig-box"><i class="fa-solid fa-chart-bar"></i></div><span>Reksa Dana</span></div>
+    </div>
+
+    <div class="sec-lbl">PENGATURAN</div>
+    <div class="icon-grid">
+      <div class="ig-item"><div class="ig-box"><i class="fa-solid fa-bell"></i></div><span>Notifikasi</span></div>
+      <div class="ig-item"><div class="ig-box"><i class="fa-solid fa-lock"></i></div><span>Keamanan</span></div>
+      <div class="ig-item"><div class="ig-box"><i class="fa-solid fa-circle-question"></i></div><span>Bantuan</span></div>
+    </div>
+
+    <div style="height:20px;"></div>
+  </div>
+
+  <div class="bnav">
+    <div class="ni" onclick="go('home')"><i class="fa-solid fa-house ic"></i><span class="lb">Beranda</span></div>
+    <div class="ni" onclick="go('investasi')"><i class="fa-solid fa-chart-line ic"></i><span class="lb">Investasi</span></div>
+    <div class="ni" onclick="go('transfer')"><i class="fa-solid fa-arrow-right-arrow-left ic"></i><span class="lb">Transfer</span></div>
+    <div class="ni" onclick="go('bayar')"><i class="fa-solid fa-basket-shopping ic"></i><span class="lb">Bayar &amp; Beli</span></div>
+    <div class="ni on"><i class="fa-solid fa-border-all ic"></i><span class="lb">Lainnya</span></div>
+  </div>
+</div>
+
+<!-- ══════════ TRANSFER ══════════ -->
+<div class="screen" id="transfer">
+  <div class="search-topbar">
+    <div class="ti"><i class="fa-regular fa-bell"></i></div>
+    <div class="search-pill">
+      <i class="fa-solid fa-magnifying-glass" style="font-size:13px;"></i>
+      <span>Cari Penerima</span>
+    </div>
+    <div class="ti"><i class="fa-regular fa-comment"></i></div>
+  </div>
+
+  <div class="scroll" style="background:#f3f3f3;">
+    <div style="height:8px;background:#f3f3f3;"></div>
+    <div class="qa-row" style="justify-content:space-around;">
+      <div class="qa"><div class="qa-ic"><i class="fa-solid fa-money-bill-transfer"></i></div><span>Transfer<br>Rupiah</span></div>
+      <div class="qa"><div class="qa-ic"><i class="fa-solid fa-globe"></i></div><span>Transfer<br>Valas</span></div>
+      <div class="qa"><div class="qa-ic" style="position:relative;"><span class="baru" style="left:auto;right:-8px;transform:none;">NEW</span><i class="fa-solid fa-qrcode"></i></div><span>QRIS</span></div>
+      <div class="qa"><div class="qa-ic"><i class="fa-solid fa-arrows-rotate"></i></div><span>Konversi<br>Valas</span></div>
+    </div>
+
+    <div class="tr-add">
+      <div class="tr-add-ic"><i class="fa-solid fa-plus"></i></div>
+      <div class="tr-add-label">Tambah Penerima</div>
+      <i class="fa-solid fa-chevron-right" style="color:#bbb;"></i>
+    </div>
+
+    <div style="height:8px;background:#f3f3f3;"></div>
+
+    <div class="tr-list">
+      <div class="tr-row">
+        <div class="tr-row-ic"><i class="fa-regular fa-user"></i></div>
+        <div class="tr-row-label">Rekening Saya</div>
+        <span class="tr-count">3</span>
+        <i class="fa-solid fa-chevron-down chev-down"></i>
+      </div>
+      <div class="tr-row">
+        <div class="tr-row-ic"><i class="fa-solid fa-money-bill-transfer"></i></div>
+        <div class="tr-row-label">Penerima Transfer Rupiah</div>
+        <span class="tr-count">23</span>
+        <i class="fa-solid fa-chevron-down chev-down"></i>
+      </div>
+      <div class="tr-row">
+        <div class="tr-row-ic"><i class="fa-solid fa-globe"></i></div>
+        <div class="tr-row-label">Penerima Transfer Valas</div>
+        <span class="tr-count">2</span>
+        <i class="fa-solid fa-chevron-down chev-down"></i>
+      </div>
+    </div>
+
+    <div class="tr-dispute">
+      <div class="tr-dispute-q">ADA KESALAHAN PADA TRANSAKSI SEBELUMNYA?</div>
+      <button class="tr-dispute-btn">BUAT SANGGAHAN TRANSAKSI</button>
+    </div>
+  </div>
+
+  <div class="bnav">
+    <div class="ni" onclick="go('home')"><i class="fa-solid fa-house ic"></i><span class="lb">Beranda</span></div>
+    <div class="ni" onclick="go('investasi')"><i class="fa-solid fa-chart-line ic"></i><span class="lb">Investasi</span></div>
+    <div class="ni on"><i class="fa-solid fa-arrow-right-arrow-left ic"></i><span class="lb">Transfer</span></div>
+    <div class="ni" onclick="go('bayar')"><i class="fa-solid fa-basket-shopping ic"></i><span class="lb">Bayar &amp; Beli</span></div>
+    <div class="ni" onclick="go('lainnya')"><i class="fa-solid fa-border-all ic"></i><span class="lb">Lainnya</span></div>
+  </div>
+</div>
+
+<!-- ══════════ BAYAR & BELI ══════════ -->
+<div class="screen" id="bayar">
+  <div class="topbar">
+    <div class="ti"><i class="fa-regular fa-bell"></i></div>
+    <div class="logo" style="font-weight:700;font-size:17px;">Bayar &amp; Beli</div>
+    <div class="ti"><i class="fa-regular fa-comment"></i></div>
+  </div>
+
+  <div class="scroll" style="background:#f3f3f3;">
+    <div class="bb-grid">
+      <div class="bb-tile" style="background:linear-gradient(160deg,#e07bb2,#a93a87);"><i class="fa-solid fa-file-invoice bb-art"></i><span>Bayar<br>Tagihan</span></div>
+      <div class="bb-tile" style="background:linear-gradient(160deg,#8f9bdc,#585da9);"><i class="fa-solid fa-mobile-screen bb-art"></i><span>Pulsa</span></div>
+      <div class="bb-tile" style="background:linear-gradient(160deg,#a9c6e8,#7d9fd0);"><i class="fa-solid fa-wallet bb-art"></i><span>Uang<br>Elektronik</span></div>
+      <div class="bb-tile" style="background:linear-gradient(160deg,#7ec6b9,#3f9c8d);"><i class="fa-solid fa-wifi bb-art"></i><span>Paket<br>Data</span></div>
+      <div class="bb-tile" style="background:linear-gradient(160deg,#e3b765,#c4922f);"><i class="fa-regular fa-lightbulb bb-art"></i><span>Listrik</span></div>
+    </div>
+
+    <div class="sect-head" style="padding-top:6px;"><span class="sect-lbl">PROMO</span></div>
+    <div class="bb-promo">
+      <span class="deco" style="top:8px;right:18px;">🍩</span>
+      <span class="deco" style="bottom:6px;right:54px;">🍟</span>
+      <span class="deco" style="top:14px;left:16px;">📽️</span>
+      <div style="margin-left:64px;">
+        <div class="bb-promo-title">Promo Seru!</div>
+        <div class="bb-promo-sub">Cuma buat kamu!</div>
+      </div>
+    </div>
+
+    <div class="sect-head"><span class="sect-lbl">DAFTAR TRANSAKSI</span></div>
+    <div class="txn-list">
+      <div class="txn-row">
+        <div class="txn-logo"><span><span style="color:#00abe6;">GO</span><span style="color:#93c83d;">PAY</span></span></div>
+        <div class="txn-body">
+          <div class="txn-top"><span class="txn-name">My GOPAY</span><i class="fa-solid fa-chevron-right txn-chev"></i></div>
+          <div class="txn-sub">GO-PAY - 08888999189</div>
+          <div class="txn-amt"><span class="rp">Rp</span>300.000</div>
+          <div class="txn-refill">ISI KEMBALI</div>
+        </div>
+      </div>
+      <div class="txn-row" style="border-bottom:none;">
+        <div class="txn-logo" style="color:#4c2a86;font-size:14px;">OVO</div>
+        <div class="txn-body">
+          <div class="txn-top"><span class="txn-name">My OVO</span><i class="fa-solid fa-chevron-right txn-chev"></i></div>
+          <div class="txn-sub">OVO - 08888999189</div>
+          <div class="txn-amt"><span class="rp">Rp</span>200.000</div>
+          <div class="txn-refill">ISI KEMBALI</div>
+        </div>
+      </div>
+    </div>
+    <div style="height:24px;"></div>
+  </div>
+
+  <div class="bnav">
+    <div class="ni" onclick="go('home')"><i class="fa-solid fa-house ic"></i><span class="lb">Beranda</span></div>
+    <div class="ni" onclick="go('investasi')"><i class="fa-solid fa-chart-line ic"></i><span class="lb">Investasi</span></div>
+    <div class="ni" onclick="go('transfer')"><i class="fa-solid fa-arrow-right-arrow-left ic"></i><span class="lb">Transfer</span></div>
+    <div class="ni on"><i class="fa-solid fa-basket-shopping ic"></i><span class="lb">Bayar &amp; Beli</span></div>
+    <div class="ni" onclick="go('lainnya')"><i class="fa-solid fa-border-all ic"></i><span class="lb">Lainnya</span></div>
+  </div>
+</div>
+
+<!-- ══════════ INVESTASI ══════════ -->
+<div class="screen" id="investasi">
+  <div class="topbar">
+    <div class="ti"><i class="fa-regular fa-bell"></i></div>
+    <div class="logo" style="font-weight:700;font-size:17px;">Investasi</div>
+    <div class="ti"><i class="fa-regular fa-file-lines"></i></div>
+    <div class="ti"><i class="fa-regular fa-comment"></i></div>
+  </div>
+
+  <div class="scroll" style="background:#f3f3f3;">
+    <div style="height:8px;background:#f3f3f3;"></div>
+    <div class="prod-grid" style="border-bottom:none;">
+      <div class="pi"><div class="pi-wrap"><div class="pi-ic"><i class="fa-solid fa-calculator"></i></div><span class="baru">BARU</span></div><span>Goal-<br>Culator</span></div>
+      <div class="pi"><div class="pi-wrap"><div class="pi-ic"><i class="fa-solid fa-hand-holding-dollar"></i></div></div><span>Deposito</span></div>
+      <div class="pi"><div class="pi-wrap"><div class="pi-ic"><i class="fa-solid fa-chart-pie"></i></div></div><span>Reksa Dana</span></div>
+      <div class="pi"><div class="pi-wrap"><div class="pi-ic"><i class="fa-solid fa-money-bill-1"></i></div></div><span>Obligasi</span></div>
+      <div class="pi"><div class="pi-wrap"><div class="pi-ic"><i class="fa-solid fa-arrows-rotate"></i></div></div><span>Konversi<br>valas</span></div>
+    </div>
+
+    <div class="sect-head"><span class="sect-lbl">REKSA DANA DI DBS INDONESIA</span><span class="sect-all">Lihat Semua <i class="fa-solid fa-chevron-right"></i></span></div>
+    <div class="hcards">
+      <div class="fund-card"><div class="fund-ic" style="color:#F5A623;"><i class="fa-solid fa-money-bill-trend-up"></i></div><div class="fund-name">Reksa Dana<br>Berkinerja Terbaik</div></div>
+      <div class="fund-card"><div class="fund-ic" style="color:#1bb394;"><i class="fa-solid fa-sack-dollar"></i></div><div class="fund-name">Reksa Dana<br>Terpopuler</div></div>
+    </div>
+
+    <div class="sect-head"><span class="sect-lbl">OBLIGASI</span><span class="sect-all">Lihat Semua <i class="fa-solid fa-chevron-right"></i></span></div>
+    <div class="hcards">
+      <div class="bond-card">
+        <div class="bond-name">PBS032</div>
+        <div class="bond-row"><span>Tingkat kupon</span><span class="bond-val">4,875<span class="pct">%</span></span></div>
+        <div class="bond-row"><span>YTM</span><span class="bond-val">4,265<span class="pct">%</span></span></div>
+      </div>
+      <div class="bond-card">
+        <div class="bond-name">ORI023T3</div>
+        <div class="bond-row"><span>Tingkat kupon</span><span class="bond-val">5,950<span class="pct">%</span></span></div>
+        <div class="bond-row"><span>YTM</span><span class="bond-val">5,420<span class="pct">%</span></span></div>
+      </div>
+    </div>
+
+    <div class="sect-head"><span class="sect-lbl">TABUNGAN DAN GIRO</span></div>
+    <div class="idr-card">
+      <div class="from-ic" style="background:#fff;"><img src="dbs-logo.png" style="width:70%;height:70%;object-fit:contain;"></div>
+      <div style="flex:1;font-size:16px;font-weight:600;color:#1a1a1a;">IDR</div>
+      <div style="font-size:17px;font-weight:700;color:#1a1a1a;">18.985.081</div>
+    </div>
+    <div style="height:24px;"></div>
+  </div>
+
+  <div class="bnav">
+    <div class="ni" onclick="go('home')"><i class="fa-solid fa-house ic"></i><span class="lb">Beranda</span></div>
+    <div class="ni on"><i class="fa-solid fa-chart-line ic"></i><span class="lb">Investasi</span></div>
+    <div class="ni" onclick="go('transfer')"><i class="fa-solid fa-arrow-right-arrow-left ic"></i><span class="lb">Transfer</span></div>
+    <div class="ni" onclick="go('bayar')"><i class="fa-solid fa-basket-shopping ic"></i><span class="lb">Bayar &amp; Beli</span></div>
+    <div class="ni" onclick="go('lainnya')"><i class="fa-solid fa-border-all ic"></i><span class="lb">Lainnya</span></div>
+  </div>
+</div>
+
+<!-- ══════════ HISTORI TRANSAKSI ══════════ -->
+<div class="screen" id="history">
+  <div class="hist-header">
+    <div class="hist-top">
+      <div class="ti" onclick="back()" style="color:#1a1a1a;"><i class="fa-solid fa-chevron-left"></i></div>
+      <div class="hist-title">Histori Transaksi</div>
+      <div class="ti" style="color:#1a1a1a;"><i class="fa-regular fa-comment"></i></div>
+    </div>
+    <div class="hist-av" id="hist-av">A</div>
+    <div class="hist-name" id="hist-name">Abimanyu</div>
+    <button class="hist-transfer-btn">TRANSFER</button>
+  </div>
+  <div class="scroll" style="background:#f3f3f3;">
+    <div class="hist-rincian">Lihat rincian <i class="fa-solid fa-chevron-right" style="color:#bbb;"></i></div>
+    <div class="hist-date">22 SEP</div>
+    <div class="hist-tx">
+      <div class="hist-tx-title">Transfer dana</div>
+      <div class="hist-tx-sub">Ke Abimanyu</div>
+      <div class="hist-tx-amt">- Rp 165.044</div>
+    </div>
+    <div class="hist-date">06 MAR</div>
+    <div class="hist-tx">
+      <div class="hist-tx-title">Transfer dana</div>
+      <div class="hist-tx-sub">Ke Abimanyu</div>
+      <div class="hist-tx-amt">- Rp 215.000</div>
+    </div>
+  </div>
+</div>
+<!-- ══════════ DIGIBOT CHAT ══════════ -->
+<div class="screen" id="digibot">
+  <div class="bot-top">
+    <div style="width:36px;"></div>
+    <div class="bot-title">digibot</div>
+    <div class="bot-close" onclick="back()">✕</div>
+  </div>
+  <div class="scroll" style="background:#ededf0;padding:14px 12px;">
+    <div class="bot-bubble">
+      1. Jaga selalu kerahasiaan datamu.<br>
+      2. Jangan berikan OTP, PIN, atau CVV ke siapa pun termasuk yang mengaku bank.<br>
+      3. Nomor resmi DBSI Customer Centre ada di belakang kartumu di 0804-1500-327 atau +62 21 298-52888 (luar negeri) atau Live Chat melalui Aplikasi DBS digibank.
+      <br><br>
+      Info lengkap cek di <span class="bot-link">link ini</span>.
+    </div>
+    <div class="bot-bubble">Kamu dapat bertanya tentang banyak hal, contohnya:</div>
+    <div class="bot-cards">
+      <div class="bot-card">
+        <div class="bot-card-h">Mengenal digibank</div>
+        <div class="bot-q">Keuntungan apa saja yang dapat saya peroleh dari aplikasi digibank?</div>
+        <div class="bot-q">Apa saja transaksi yang bisa saya lakukan melalui digibank?</div>
+        <div class="bot-q" style="border-bottom:none;">Apakah digibank aman?</div>
+      </div>
+      <div class="bot-card">
+        <div class="bot-card-h">Menu &amp; Fitur</div>
+        <div class="bot-q">Bagaimana cara transfer ke bank lain?</div>
+        <div class="bot-q">Bagaimana cara bayar pakai QRIS?</div>
+        <div class="bot-q" style="border-bottom:none;">Bagaimana cara buka deposito?</div>
+      </div>
+    </div>
+    <div class="bot-bubble" style="max-width:80%;">Untuk melihat topik apa saja yang tersedia, tekan menu ≡</div>
+  </div>
+  <div class="bot-input">
+    <i class="fa-solid fa-bars bot-menu"></i>
+    <div class="bot-field">Ketik pesan...</div>
+  </div>
+</div>
+</div><!-- /phone -->
+
+<script>
+let prev = 'splash';
+let balVisible = false;
+
+function go(id) {
+  const cur = document.querySelector('.screen.active');
+  if (cur) { prev = cur.id; cur.classList.remove('active'); }
+  const nxt = document.getElementById(id);
+  if (nxt) {
+    nxt.classList.add('active');
+    const s = nxt.querySelector('.scroll');
+    if (s) s.scrollTop = 0;
+  }
+}
+
+function back() { go(prev || 'home'); }
+
+function openHistoryFromRow(el) {
+  const sub = el.closest('.tr-sub');
+  if (!sub) return;
+  const av = sub.querySelector('.tr-sub-av');
+  const name = sub.querySelector('.tr-sub-name').textContent;
+  const histAv = document.querySelector('#history .hist-av');
+  histAv.innerHTML = av.innerHTML;
+  histAv.style.background = av.style.background || '#f7a8b0';
+  histAv.style.color = av.style.color || '#fff';
+  document.querySelector('#history .hist-name').textContent = name;
+  document.querySelectorAll('#history .hist-tx-sub').forEach(e => e.textContent = 'Ke ' + name.split(' ')[0]);
+  go('history');
+}
+
+function toggleRecipients(row) {
+  const sub = row.nextElementSibling;
+  if (!sub || !sub.classList.contains('tr-sublist')) return;
+  sub.classList.toggle('open');
+  row.classList.toggle('expanded');
+}
+
+function toggleBal() {
+  balVisible = !balVisible;
+  document.querySelectorAll('.bal').forEach(el => {
+    if (balVisible) {
+      el.textContent = el.dataset.val || '••••••';
+      el.classList.add('shown');
+    } else {
+      const dots = el.dataset.val && el.dataset.val.length > 10 ? '••••••••' : '••••••';
+      el.textContent = dots;
+      el.classList.remove('shown');
+    }
+  });
+  const ic = document.getElementById('eye-ic');
+  ic.className = balVisible ? 'fa-regular fa-eye-slash' : 'fa-regular fa-eye';
+}
+
+// open digibot from any chat icon
+document.querySelectorAll('.fa-comment').forEach(ic => {
+  const btn = ic.closest('.ti, .splash-chat-btn');
+  if (btn) btn.addEventListener('click', () => go('digibot'));
+});
+</script>
+</body>
+</html>

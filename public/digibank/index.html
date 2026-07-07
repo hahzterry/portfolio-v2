@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>DBS digibank — Prototype</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+
+body {
+  background: radial-gradient(circle at 50% 0%, #1e1e22 0%, #0d0d0f 70%);
+  min-height: 100vh;
+  font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Segoe UI', sans-serif;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 40px 24px;
+  gap: 48px;
+}
+
+/* ─── HEADER ─── */
+.header { text-align: center; }
+.header-logo {
+  display: flex; align-items: center; justify-content: center; gap: 6px;
+  margin-bottom: 14px;
+}
+.logo-x { color: #CC1111; font-size: 30px; font-weight: 900; }
+.logo-text { color: white; font-size: 28px; font-weight: 800; }
+.logo-sub { color: rgba(255,255,255,.55); font-size: 22px; font-weight: 400; }
+.header-title {
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  color: rgba(255,255,255,.35);
+}
+
+/* ─── CARDS ─── */
+.cards {
+  display: flex;
+  gap: 28px;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.card {
+  width: 250px;
+  background: rgba(255,255,255,.04);
+  border: 1px solid rgba(255,255,255,.08);
+  border-radius: 24px;
+  padding: 32px 26px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+  cursor: pointer;
+  text-decoration: none;
+  transition: transform .2s ease, border-color .2s ease, background .2s ease;
+}
+.card:hover {
+  transform: translateY(-6px);
+  background: rgba(255,255,255,.07);
+}
+.card.current:hover { border-color: rgba(255,255,255,.25); }
+.card.phase2:hover  { border-color: rgba(56,142,233,.5); }
+.card.revamp:hover  { border-color: rgba(204,17,17,.5); }
+
+.card-icon {
+  width: 70px; height: 70px;
+  border-radius: 20px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 28px;
+}
+.card.current .card-icon {
+  background: rgba(255,255,255,.08);
+  color: rgba(255,255,255,.6);
+}
+.card.phase2 .card-icon {
+  background: rgba(56,142,233,.15);
+  color: #5aa9f5;
+}
+.card.revamp .card-icon {
+  background: rgba(204,17,17,.15);
+  color: #ff5252;
+}
+
+.card-tag {
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  padding: 4px 14px;
+  border-radius: 20px;
+}
+.card.current .card-tag {
+  background: rgba(255,255,255,.08);
+  color: rgba(255,255,255,.55);
+}
+.card.phase2 .card-tag {
+  background: rgba(56,142,233,.2);
+  color: #7bbcff;
+}
+.card.revamp .card-tag {
+  background: rgba(204,17,17,.2);
+  color: #ff6b6b;
+}
+
+.card-name {
+  color: white;
+  font-size: 19px;
+  font-weight: 700;
+}
+.card-desc {
+  color: rgba(255,255,255,.4);
+  font-size: 13px;
+  text-align: center;
+  line-height: 1.5;
+}
+.card-cta {
+  margin-top: 4px;
+  display: flex; align-items: center; gap: 8px;
+  font-size: 13px; font-weight: 700;
+}
+.card.current .card-cta { color: rgba(255,255,255,.55); }
+.card.phase2 .card-cta  { color: #5aa9f5; }
+.card.revamp .card-cta  { color: #ff5252; }
+.card:hover .card-cta i { transform: translateX(4px); }
+.card-cta i { transition: transform .2s ease; }
+
+/* ─── FOOTER ─── */
+.footer {
+  font-size: 11px;
+  color: rgba(255,255,255,.2);
+  text-align: center;
+  line-height: 1.6;
+}
+
+@media (max-width: 640px) {
+  body { gap: 36px; }
+  .cards { flex-direction: column; }
+}
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div class="header-logo">
+    <span class="logo-x">✕</span>
+    <span class="logo-text">DBS</span>
+    <span class="logo-sub">&nbsp;digibank</span>
+  </div>
+  <div class="header-title">Prototype — Choose a version</div>
+</div>
+
+<div class="cards">
+
+  <a class="card current" href="current.html">
+    <div class="card-icon"><i class="fa-solid fa-mobile-screen-button"></i></div>
+    <span class="card-tag">Original</span>
+    <div class="card-name">As-Is</div>
+    <div class="card-desc">The existing DBS digibank experience, as it is today.</div>
+    <div class="card-cta">Open <i class="fa-solid fa-arrow-right"></i></div>
+  </a>
+
+  <a class="card phase2" href="revamp-phase2.html">
+    <div class="card-icon"><i class="fa-solid fa-layer-group"></i></div>
+    <span class="card-tag">Phase 2</span>
+    <div class="card-name">Revamp v2</div>
+    <div class="card-desc">Themes, personalisation &amp; the reworked login and home.</div>
+    <div class="card-cta">Open <i class="fa-solid fa-arrow-right"></i></div>
+  </a>
+
+  <a class="card revamp" href="revamp.html">
+    <div class="card-icon"><i class="fa-solid fa-wand-magic-sparkles"></i></div>
+    <span class="card-tag">Phase 3</span>
+    <div class="card-name">Revamp v3</div>
+    <div class="card-desc">The latest in-progress build — user panel &amp; beyond.</div>
+    <div class="card-cta">Open <i class="fa-solid fa-arrow-right"></i></div>
+  </a>
+
+</div>
+
+<div class="footer">
+  PT Bank DBS Indonesia — Prototype only, not an official product.
+</div>
+
+</body>
+</html>
