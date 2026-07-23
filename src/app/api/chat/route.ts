@@ -4,79 +4,149 @@ import { NextRequest } from 'next/server'
 export async function POST(req: NextRequest) {
   console.log('=== API CHAT START ===')
 
-  // ── 1. Check API Key ──────────────────────────────────────────────────────
-  if (!process.env.ANTHROPIC_API_KEY) {
+  // 1. Check API key
+  const apiKey = process.env.ANTHROPIC_API_KEY
+
+  if (!apiKey) {
     console.error('❌ ANTHROPIC_API_KEY is missing')
-    return new Response(
-      JSON.stringify({ error: 'ANTHROPIC_API_KEY is not configured' }),
-      { status: 500, headers: { 'Content-Type': 'application/json' } }
+
+    return Response.json(
+      {
+        error: 'ANTHROPIC_API_KEY is not configured',
+      },
+      { status: 500 }
     )
   }
-  console.log('✅ API key found')
 
-  // ── 2. Parse Request Body Safely ────────────────────────────────────────
-  let body
+  console.log('✅ Anthropic API key found')
+
+  // Never log the actual API key
+  console.log(
+    '🔑 Key prefix:',
+    apiKey.substring(0, 10) + '...'
+  )
+
+  // 2. Parse request
+  let body: {
+    messages?: Array<{
+      role?: string
+      content?: string
+    }>
+  }
+
   try {
     body = await req.json()
-    console.log('✅ Request parsed:', body)
-  } catch (err) {
-    console.error('❌ Failed to parse request:', err)
-    return new Response(
-      JSON.stringify({ error: 'Invalid JSON body' }),
-      { status: 400, headers: { 'Content-Type': 'application/json' } }
+
+    console.log(
+      '✅ Request received:',
+      JSON.stringify(body)
+    )
+  } catch (error) {
+    console.error('❌ Invalid JSON:', error)
+
+    return Response.json(
+      {
+        error: 'Invalid JSON body',
+      },
+      { status: 400 }
     )
   }
 
-  // ── 3. Validate Messages ─────────────────────────────────────────────────
-  const messages = body.messages
-  if (!messages || !Array.isArray(messages) || messages.length === 0) {
+  // 3. Validate messages
+  if (
+    !body.messages ||
+    !Array.isArray(body.messages) ||
+    body.messages.length === 0
+  ) {
     console.error('❌ No messages array found')
-    return new Response(
-      JSON.stringify({ error: 'No messages provided' }),
-      { status: 400, headers: { 'Content-Type': 'application/json' } }
+
+    return Response.json(
+      {
+        error: 'No messages provided',
+      },
+      { status: 400 }
     )
   }
 
-  const lastMessage = messages[messages.length - 1]
-  const userContent = lastMessage?.content || 'Hello'
+  // 4. Get latest user message
+  const lastMessage =
+    body.messages[body.messages.length - 1]
+
+  const userContent =
+    typeof lastMessage?.content === 'string'
+      ? lastMessage.content.trim()
+      : ''
+
+  if (!userContent) {
+    return Response.json(
+      {
+        error: 'Message content is empty',
+      },
+      { status: 400 }
+    )
+  }
+
   console.log('💬 User message:', userContent)
 
-  // ── 4. Initialize Anthropic ──────────────────────────────────────────────
+  // 5. Initialize Anthropic
   const client = new Anthropic({
-    apiKey: process.env.ANTHROPIC_API_KEY,
+    apiKey,
   })
 
-  // ── 5. Call Anthropic ─────────────────────────────────────────────────────
+  // 6. Call Anthropic
   try {
-    console.log('🚀 Calling Anthropic...')
+    console.log('🚀 Calling Anthropic API...')
 
     const response = await client.messages.create({
       model: 'claude-3-5-haiku-20241022',
       max_tokens: 150,
-      messages: [{ role: 'user', content: userContent }],
+      messages: [
+        {
+          role: 'user',
+          content: userContent,
+        },
+      ],
     })
 
     console.log('✅ Anthropic responded')
 
-    const reply = response.content[0].type === 'text' 
-      ? response.content[0].text 
-      : 'No response'
-
-    console.log('📝 Reply:', reply.slice(0, 50))
-
-    return new Response(
-      JSON.stringify({ reply }),
-      { status: 200, headers: { 'Content-Type': 'application/json' } }
+    const textBlock = response.content.find(
+      (block) => block.type === 'text'
     )
 
-  } catch (err) {
-    console.error('❌ Anthropic API error:', err)
-    return new Response(
-      JSON.stringify({ 
-        error: 'Anthropic API error', 
-        details: (err as Error).message 
-      }),
-      { status: 500, headers: { 'Content-Type': 'application/json' } }
+    const reply =
+      textBlock?.type === 'text'
+        ? textBlock.text
+        : 'No response generated.'
+
+    console.log(
+      '📝 Reply:',
+      reply.substring(0, 100)
+    )
+
+    return Response.json(
+      {
+        reply,
+      },
+      { status: 200 }
+    )
+  } catch (error: any) {
+    console.error('❌ Anthropic API error')
+    console.error('Status:', error?.status)
+    console.error('Message:', error?.message)
+
+    return Response.json(
+      {
+        error: 'Anthropic API request failed',
+        details:
+          error?.message || 'Unknown Anthropic error',
+      },
+      {
+        status:
+          error?.status >= 400 && error?.status < 600
+            ? error.status
+            : 500,
+      }
     )
   }
 }
