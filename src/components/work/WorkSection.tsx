@@ -120,7 +120,8 @@ export default function WorkSection() {
           <Reveal key={c.id} delay={((i % 4) + 1) as 1 | 2 | 3 | 4}>
             <a className={`case ${c.cv}`} href={c.href}>
               <div className="canvas">
-                <div className="cv-blob" />
+                {/* ✅ Apply blobColor directly to the element */}
+                <div className="cv-blob" style={{ background: c.blobColor }} />
                 {c.image && (
                   // eslint-disable-next-line @next/next/no-img-element
                   <img className="cv-image" src={c.image} alt="" aria-hidden />
