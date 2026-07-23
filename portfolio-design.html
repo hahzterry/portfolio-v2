@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>Portfolio — Design Mockup</title>
+<title>Portfolio — Hahz Terry</title>
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 <link href="https://fonts.googleapis.com/css2?family=Geist:wght@300;400;500;600;700&family=Geist+Mono:wght@400;500&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet" />
@@ -21,7 +21,6 @@
   --turq: #5fe5d3; --turq-deep: #2dc7b5; --purple: #bf5af2; --violet: #8b5cf6; --indigo: #6c5ce7;
   --bill-red: #d44a5e; --bill-warm: #ff7a8a; --gold: #d4a45c;
   --pink: #ff5f9e; --green: #30d158;
-  /* legacy aliases used elsewhere */
   --blue: #5fe5d3; --orange: #ff7a8a; --teal: #5fe5d3;
   --ease: cubic-bezier(0.32, 0.72, 0, 1);
   --r: 22px; --r-lg: 30px;
@@ -199,15 +198,28 @@ p.hero-sub { font-size:18px; line-height:1.55; color:var(--t2); max-width:520px;
   background:rgba(255,255,255,0.1); backdrop-filter:blur(20px); border:0.5px solid var(--border-strong);
   display:grid; place-items:center; color:#fff; transition:.3s; }
 .case:hover .arrow-tile { background:var(--t1); color:#000; transform:rotate(-45deg); }
-.cv-1 { background: radial-gradient(ellipse at 70% 30%, var(--turq), transparent 60%), radial-gradient(ellipse at 20% 80%, var(--violet), transparent 60%), #051315; }
-.cv-2 { background: radial-gradient(ellipse at 30% 40%, var(--bill-warm), transparent 55%), radial-gradient(ellipse at 80% 80%, var(--purple), transparent 55%), #160814; }
-.cv-3 { background: radial-gradient(ellipse at 50% 30%, var(--turq-deep), transparent 60%), radial-gradient(ellipse at 20% 90%, var(--turq), transparent 55%), #04130f; }
-.cv-4 { background: radial-gradient(ellipse at 70% 50%, var(--purple), transparent 60%), radial-gradient(ellipse at 25% 25%, #221547, transparent 60%), #0a0418; }
+
+/* ✅ UPDATED: Unique background gradients for each case study */
+.cv-1 { background: radial-gradient(ellipse at 70% 30%, #5FE5D3, transparent 60%), radial-gradient(ellipse at 20% 80%, #8B5CF6, transparent 60%), #051315; }
+.cv-2 { background: radial-gradient(ellipse at 30% 40%, #FF7A8A, transparent 55%), radial-gradient(ellipse at 80% 80%, #BF5AF2, transparent 55%), #160814; }
+.cv-3 { background: radial-gradient(ellipse at 50% 30%, #2DC7B5, transparent 60%), radial-gradient(ellipse at 20% 90%, #5FE5D3, transparent 55%), #04130f; }
+.cv-4 { background: radial-gradient(ellipse at 70% 50%, #BF5AF2, transparent 60%), radial-gradient(ellipse at 25% 25%, #221547, transparent 60%), #0a0418; }
+.cv-5 { background: radial-gradient(ellipse at 60% 40%, #F97316, transparent 55%), radial-gradient(ellipse at 30% 80%, #8B5CF6, transparent 50%), #1a0a04; }
+.cv-6 { background: radial-gradient(ellipse at 40% 30%, #10B981, transparent 55%), radial-gradient(ellipse at 70% 70%, #5FE5D3, transparent 45%), #04120e; }
+
+/* ✅ UPDATED: Blob styles with inline colors (applied via style attribute) */
 .cv-blob { position:absolute; border-radius:50%; filter:blur(40px); opacity:0.5; }
-.cv-1 .cv-blob { top:15%; right:18%; width:160px; height:160px; background:var(--turq); animation:float 7s ease-in-out infinite; }
-.cv-2 .cv-blob { bottom:20%; left:18%; width:180px; height:180px; background:var(--bill-warm); animation:float 8s ease-in-out infinite reverse; }
-.cv-3 .cv-blob { top:18%; left:42%; width:170px; height:170px; background:var(--turq-deep); animation:float 9s ease-in-out infinite; }
-.cv-4 .cv-blob { top:25%; right:22%; width:200px; height:200px; background:var(--purple); animation:float 7.5s ease-in-out infinite reverse; }
+
+/* Position each blob uniquely */
+.cv-1 .cv-blob { top:15%; right:18%; width:160px; height:160px; animation:float 7s ease-in-out infinite; }
+.cv-2 .cv-blob { bottom:20%; left:18%; width:180px; height:180px; animation:float 8s ease-in-out infinite reverse; }
+.cv-3 .cv-blob { top:18%; left:42%; width:170px; height:170px; animation:float 9s ease-in-out infinite; }
+.cv-4 .cv-blob { top:25%; right:22%; width:200px; height:200px; animation:float 7.5s ease-in-out infinite reverse; }
+.cv-5 .cv-blob { top:30%; left:15%; width:190px; height:190px; animation:float 8.5s ease-in-out infinite; }
+.cv-6 .cv-blob { bottom:25%; right:20%; width:175px; height:175px; animation:float 7s ease-in-out infinite reverse; }
+
+/* CV Image overlay (sits on top of blob) */
+.cv-image { position:absolute; inset:0; width:100%; height:100%; object-fit:cover; opacity:0.5; z-index:1; mix-blend-mode:overlay; }
 
 /* ARCHIVE */
 .archive-wrap { display:grid; grid-template-columns: 1fr 1.2fr; gap:36px; align-items:center; }
@@ -489,55 +501,115 @@ footer .fr a:hover { color:var(--t1); }
     </div>
   </section>
 
+  <!-- ============================================================ -->
+  <!-- ✅ UPDATED WORK SECTION — Matches React component exactly     -->
+  <!-- ============================================================ -->
   <section class="section" id="work">
     <div class="section-head">
       <div class="reveal">
-        <span class="label-pill"><span class="ldot" style="background:var(--bill-warm)"></span> Selected work</span>
-        <h2>A few things I've built — <br><span class="serif">case studies inside.</span></h2>
+        <span class="label-pill"><span class="ldot" style="background:#FF7A8A"></span> Work</span>
+        <h2>A few things I&apos;ve built — <br><span class="serif">using advanced tech.</span></h2>
       </div>
-      <p class="right reveal" data-delay="1">Sanitized write-ups with process and outcomes — no confidential details. Banking work shown without internal names, numbers, or system specifics.</p>
     </div>
 
     <div class="work-grid">
-      <a href="#" class="case reveal" data-delay="1">
-        <div class="canvas cv-1"><div class="cv-blob"></div></div>
-        <div class="arrow-tile"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M7 17 17 7M9 7h8v8"/></svg></div>
+
+      <!-- Case 1: Logis -->
+      <a href="https://logis.atlwarehouse.com" class="case cv-1 reveal" data-delay="1">
+        <div class="canvas">
+          <div class="cv-blob" style="background:#5FE5D3"></div>
+          <img class="cv-image" src="/logis-atl.png" alt="" />
+        </div>
+        <div class="arrow-tile">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M7 17 17 7M9 7h8v8"/></svg>
+        </div>
         <div class="meta">
-          <span class="ctag"><span style="width:5px;height:5px;border-radius:50%;background:var(--turq);"></span> Personal · Finance × AI · 2026</span>
-          <h3>Open Claw</h3>
-          <p>Cron-scheduled AI agents orchestrating an IBKR analytics pipeline — pulling positions, enriching options data, and preparing portfolio memos.</p>
+          <span class="ctag"><span style="width:5px;height:5px;border-radius:50%;background:#5FE5D3;flex-shrink:0"></span> Logistics · Automation · 2026</span>
+          <h3>Logis</h3>
+          <p>Supply chain teams use Logistics Sentry to monitor operational risks across multiple ports and carriers simultaneously.</p>
         </div>
       </a>
 
-      <a href="#" class="case reveal" data-delay="2">
-        <div class="canvas cv-2"><div class="cv-blob"></div></div>
-        <div class="arrow-tile"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M7 17 17 7M9 7h8v8"/></svg></div>
+      <!-- Case 2: 3 Word Address Map -->
+      <a href="https://rwatok.land" class="case cv-2 reveal" data-delay="2">
+        <div class="canvas">
+          <div class="cv-blob" style="background:#FF7A8A"></div>
+          <img class="cv-image" src="/3wa.png" alt="" />
+        </div>
+        <div class="arrow-tile">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M7 17 17 7M9 7h8v8"/></svg>
+        </div>
         <div class="meta">
-          <span class="ctag"><span style="width:5px;height:5px;border-radius:50%;background:var(--bill-warm);"></span> AI tooling · Banking · 2025–26 · NDA</span>
-          <h3>AI Workflow &amp; Agent Build</h3>
-          <p>A practical curriculum for building reliable AI workflows — structured prompting, grounding, and maker-checker patterns.</p>
+          <span class="ctag"><span style="width:5px;height:5px;border-radius:50%;background:#FF7A8A;flex-shrink:0"></span> Logistics · Maps · 2025</span>
+          <h3>3 Word Address Map</h3>
+          <p>RWATOK.LAND is a global addressing system that divides the world into 16.4 sq ft x 16.4 sq ft squares and assigns each square a unique combination of three words ///keep.it.simple example.</p>
         </div>
       </a>
 
-      <a href="#" class="case reveal" data-delay="3">
-        <div class="canvas cv-3"><div class="cv-blob"></div></div>
-        <div class="arrow-tile"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M7 17 17 7M9 7h8v8"/></svg></div>
+      <!-- Case 3: RNTBNB -->
+      <a href="https://rntbnb.com" class="case cv-3 reveal" data-delay="3">
+        <div class="canvas">
+          <div class="cv-blob" style="background:#F5A623"></div>
+          <img class="cv-image" src="/rntbnb.png" alt="" />
+        </div>
+        <div class="arrow-tile">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M7 17 17 7M9 7h8v8"/></svg>
+        </div>
         <div class="meta">
-          <span class="ctag"><span style="width:5px;height:5px;border-radius:50%;background:var(--turq-deep);"></span> AI summarization · Banking · 2025 · NDA</span>
-          <h3>Change Request Automation Summarizer</h3>
-          <p>Python + LLM pipeline that ingests raw change-request data and produces structured summaries for review and prioritization.</p>
+          <span class="ctag"><span style="width:5px;height:5px;border-radius:50%;background:#F5A623;flex-shrink:0"></span> Blockchain · Tourism · 2025</span>
+          <h3>RNTBNB</h3>
+          <p>QIE blockchain network for rental property management and tourism. RNTBNB is a decentralized platform that allows property owners to list their commercial real estate properties for rent.</p>
         </div>
       </a>
 
-      <a href="#" class="case reveal" data-delay="4">
-        <div class="canvas cv-4"><div class="cv-blob"></div></div>
-        <div class="arrow-tile"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M7 17 17 7M9 7h8v8"/></svg></div>
+      <!-- Case 4: Crime Booth -->
+      <a href="https://cb.lumeebooth.com" class="case cv-4 reveal" data-delay="4">
+        <div class="canvas">
+          <div class="cv-blob" style="background:#8B5CF6"></div>
+          <img class="cv-image" src="/crime-booth.png" alt="" />
+        </div>
+        <div class="arrow-tile">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M7 17 17 7M9 7h8v8"/></svg>
+        </div>
         <div class="meta">
-          <span class="ctag"><span style="width:5px;height:5px;border-radius:50%;background:var(--purple);"></span> Python automation · Banking · 2025 · NDA</span>
-          <h3>Change Request Reporting Automation</h3>
-          <p>Python modules to assign ownership, format Excel outputs, and support the recurring reporting cadence around change requests.</p>
+          <span class="ctag"><span style="width:5px;height:5px;border-radius:50%;background:#8B5CF6;flex-shrink:0"></span> Game · Claude Fable 5 · AI</span>
+          <h3>Crime Booth</h3>
+          <p>A digital crime investigation board developed in three.js using Fable 5</p>
         </div>
       </a>
+
+      <!-- Case 5: Viral Marketing Analytics -->
+      <a href="https://pitch.com/v/hahz-i75n75" class="case cv-5 reveal" data-delay="3">
+        <div class="canvas">
+          <div class="cv-blob" style="background:#F97316"></div>
+          <img class="cv-image" src="/viral-marketing.png" alt="" />
+        </div>
+        <div class="arrow-tile">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M7 17 17 7M9 7h8v8"/></svg>
+        </div>
+        <div class="meta">
+          <span class="ctag"><span style="width:5px;height:5px;border-radius:50%;background:#F97316;flex-shrink:0"></span> Marketing · Analytics · Social Media · 2026</span>
+          <h3>Viral Marketing Analytics Portfolio</h3>
+          <p>View my portfolio of platform marketing analytics dashboards and TikTok, Instagram, Facebook social media analytics.</p>
+        </div>
+      </a>
+
+      <!-- Case 6: Github Portfolio AI Sketchbook -->
+      <a href="https://github.hahz.live" class="case cv-6 reveal" data-delay="4">
+        <div class="canvas">
+          <div class="cv-blob" style="background:#10B981"></div>
+          <img class="cv-image" src="/github.png" alt="" />
+        </div>
+        <div class="arrow-tile">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M7 17 17 7M9 7h8v8"/></svg>
+        </div>
+        <div class="meta">
+          <span class="ctag"><span style="width:5px;height:5px;border-radius:50%;background:#10B981;flex-shrink:0"></span> DBS · NDA Sanitized · 2025</span>
+          <h3>Github Portfolio AI Sketchbook</h3>
+          <p>A single-page portfolio generated automatically from a GitHub profile and drawn entirely in black marker on paper. Made with Anthropic Claude Fable 5</p>
+        </div>
+      </a>
+
     </div>
   </section>
 
@@ -625,7 +697,7 @@ footer .fr a:hover { color:var(--t1); }
           <svg class="ar" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M5 12h14M13 5l7 7-7 7"/></svg></a>
         <a class="btn btn-ghost" href="https://www.linkedin.com/in/hahzterry/" target="_blank" rel="noopener noreferrer">View on LinkedIn
           <svg class="ar" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M7 17 17 7M9 7h8v8"/></svg></a>
-          <a class="btn btn-ghost" href="https://www.linkedin.com/in/hahzterry/" target="_blank" rel="noopener noreferrer">See Github
+          <a class="btn btn-ghost" href="https://github.com/hahzterry" target="_blank" rel="noopener noreferrer">See Github
           <svg class="ar" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M7 17 17 7M9 7h8v8"/></svg></a>
       </div>
     </div>
