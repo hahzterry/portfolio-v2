@@ -9,7 +9,7 @@ interface Message {
 
 const GREETING: Message = {
   role: 'assistant',
-  content: "Hey! I'm Dani 👋 Got any questions about Daniel? I'm an AI built to help answer for him — ask about his work, projects, background, or anything in between.",
+  content: "Hey! I'm Wizard of Hahz 👋 Got any questions about Hahz? I'm an AI built to help answer for him — ask about his work, projects, background, or anything in between.",
 }
 
 const STORAGE_KEY = 'dani-chat-history'

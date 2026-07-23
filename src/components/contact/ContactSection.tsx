@@ -33,15 +33,15 @@ export default function ContactSection() {
       {/* ── Contact card ────────────────────────────────────────── */}
       <Reveal className="contact">
         <h2>
-          Say <span className="serif">hello.</span>
+          Say <span className="serif">Hi.</span>
         </h2>
         <p>Email is the simplest way to reach me. I read every message that comes in.</p>
         <div className="ctas">
-          <a className="btn btn-primary" href="mailto:daniel.muljono@outlook.com">
-            daniel.muljono@outlook.com
+          <a className="btn btn-primary" href="mailto:hahz5d@pm.me">
+            hahz5d@pm.me
             <ArrowRight />
           </a>
-          <a className="btn btn-ghost" href="https://www.linkedin.com/in/daniel-ariel-muljono-76b972174/" target="_blank" rel="noopener noreferrer">
+          <a className="btn btn-ghost" href="https://www.linkedin.com/in/hahzterry/" target="_blank" rel="noopener noreferrer">
             View on LinkedIn
             <ArrowUpRight />
           </a>
@@ -52,12 +52,12 @@ export default function ContactSection() {
       <footer>
         <div className="fl">
           <span className="fdot" />
-          Live from Jakarta · UTC+7
+          Live from Atlanta, GA · EST
         </div>
         <nav className="fr" aria-label="Footer">
-          <a href="https://www.linkedin.com/in/daniel-ariel-muljono-76b972174/" target="_blank" rel="noopener noreferrer">LinkedIn</a>
-          <a href="https://github.com/dmuljono"                                   target="_blank" rel="noopener noreferrer">GitHub</a>
-          <a href="mailto:daniel.muljono@outlook.com">Email</a>
+          <a href="https://www.linkedin.com/in/hahzterry" target="_blank" rel="noopener noreferrer">LinkedIn</a>
+          <a href="https://github.com/hahzterry"                                   target="_blank" rel="noopener noreferrer">GitHub</a>
+          <a href="mailto:hahz5s@pm.me">Email</a>
         </nav>
       </footer>
 

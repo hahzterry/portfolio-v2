@@ -42,7 +42,7 @@ export default function HeroSection() {
         </h1>
 
         <p className="hero-sub">
-          I&apos;m Daniel — a Jakarta-based technologist working across banking systems,
+          I&apos;m Daniel — a Jakarta-based Digital Growth Architect working across banking systems,
           risk governance, automation and AI-assisted workflows. Currently building tools
           that make complex work easier to understand, manage and move forward.
         </p>
@@ -74,7 +74,7 @@ export default function HeroSection() {
       <div className="hero-meta">
         <div className="cell">
           <div className="l">Currently</div>
-          <div className="v">Banking Technologist</div>
+          <div className="v">Banking Digital Growth Architect</div>
         </div>
         <div className="cell">
           <div className="l">Based in</div>

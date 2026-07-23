@@ -14,7 +14,7 @@ export default function AiSection() {
             AI
           </span>
           <h2>
-            Ask <span className="serif">Dani</span> — your guide<br />
+            Ask <span className="serif">Wizard of Hahz</span> — your guide<br />
             through my work and background.
           </h2>
         </Reveal>

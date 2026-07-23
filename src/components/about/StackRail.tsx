@@ -46,7 +46,7 @@ const CELLS: Cell[] = [
     iconClass: 'b1',
     icon: <IconBriefcase />,
     label: 'Current Role',
-    primary: 'Applications Tech Risk Manager',
+    primary: 'Warehouse & Supply Chain Operations Supervisor',
     secondary: 'Change Management · Audit · Incidents · Ex-Management Trainee',
   },
   {
@@ -54,14 +54,14 @@ const CELLS: Cell[] = [
     icon: <IconChart />,
     label: 'Interests',
     primary: 'Technology & Finance',
-    secondary: 'US Technology Stockmarket · Options + Fundamental Analysis',
+    secondary: 'Stockmarket · Options · Prediction Markets · AI · Blockchain',
   },
   {
     iconClass: 'b3',
     icon: <IconFlag />,
     label: 'Hobbies',
-    primary: 'Gym · Golf · Tennis · Badminton',
-    secondary: 'Practicing consistency over a long run',
+    primary: 'Gym · Tennis · Pickleball · Basketball',
+    secondary: 'Balancing my chakras, mind, body and soul through movement and meditation',
   },
 ]
 

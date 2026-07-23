@@ -27,7 +27,7 @@ const instrumentSerif = Instrument_Serif({
 export const metadata: Metadata = {
   title: 'Daniel Muljono',
   description:
-    'Jakarta-based technologist working across banking systems, risk governance, automation and AI-assisted workflows.',
+    'Jakarta-based Digital Growth Architect working across banking systems, risk governance, automation and AI-assisted workflows.',
   icons: {
     icon: '/favicon.ico',
     shortcut: '/favicon.ico',

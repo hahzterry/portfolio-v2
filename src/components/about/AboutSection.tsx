@@ -26,7 +26,7 @@ export default function AboutSection() {
           <h2>
             In the messy <span className="serif">middle</span> —{' '}
             <br />
-            where business, systems and risk collide.
+            the old way of doing business and the new way.
           </h2>
         </Reveal>
       </div>
@@ -40,21 +40,20 @@ export default function AboutSection() {
             <div className="label">Bio</div>
             <div className="portrait">
               {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img src="/portrait/danielM.png" alt="Daniel Muljono" />
+              <img src="/portrait/hahzterry.png" alt="Hahz Terry" />
             </div>
           </div>
           <p>
-            I&apos;m a Jakarta-based technologist working at the intersection of
-            banking technology, governance, automation and AI workflows. My
-            day-to-day sits where business teams, systems, regulations and
-            internal controls collide — and where translating cleanly between
-            them matters most.
-          </p>
+            I&apos;m an Atlanta-based Digital Growth Architect working at the intersection of
+            educate and modernize business through automation, AI workflows and blockchain
+            technologies. I speak a various conferences, universities and podcasts on the
+            topics of advanced technology as a creator and educator.
           <p>
-            I stay close to what&apos;s emerging across industries, especially in
-            technology. That curiosity shows up in side projects — testing new
-            tools and building small systems that find the balance between
-            control and efficiency, instead of trading one for the other.
+            My day-to-day is motivating + educating teams, building systems and
+            creating solutions. My 20+ years of experience in tech + business brings a vast
+            of knowledge to the table, and I enjoy sharing that knowledge with others to help
+            them grow and succeed. I keep my finger on the pulse of emerging technologies
+            by building and via my Linkedin newsletters. 
           </p>
 
           <div className="quotes">
