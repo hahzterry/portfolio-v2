@@ -2,7 +2,15 @@ import Reveal from '@/components/ui/Reveal'
 
 function ArrowUpRight() {
   return (
-    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+    <svg
+      width="16"
+      height="16"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      aria-hidden="true"
+    >
       <path d="M7 17 17 7M9 7h8v8" />
     </svg>
   )
@@ -24,7 +32,7 @@ const CASES: CaseStudy[] = [
   {
     id: 'open-claw',
     cv: 'cv-1',
-    blobColor: '#5FE5D3', // Turquoise
+    blobColor: '#5FE5D3',
     tag: 'Logistics · Automation · 2026',
     tagColor: '#5FE5D3',
     title: 'Logis',
@@ -36,7 +44,7 @@ const CASES: CaseStudy[] = [
   {
     id: 'glean-ai-workflow',
     cv: 'cv-2',
-    blobColor: '#FF7A8A', // Soft Coral
+    blobColor: '#FF7A8A',
     tag: 'Logistics · Maps · 2025',
     tagColor: '#FF7A8A',
     title: '3 Word Address Map',
@@ -48,7 +56,7 @@ const CASES: CaseStudy[] = [
   {
     id: 'rntbnb',
     cv: 'cv-3',
-    blobColor: '#F5A623', // Warm Amber
+    blobColor: '#F5A623',
     tag: 'Blockchain · Tourism · 2025',
     tagColor: '#F5A623',
     title: 'RNTBNB',
@@ -60,19 +68,19 @@ const CASES: CaseStudy[] = [
   {
     id: 'crime-booth',
     cv: 'cv-4',
-    blobColor: '#8B5CF6', // Soft Purple
+    blobColor: '#8B5CF6',
     tag: 'Game · Claude Fable 5 · AI',
     tagColor: '#8B5CF6',
     title: 'Crime Booth',
     description:
-      'A digital crime investigation board developed in three.js using Fable 5',
+      'A digital crime investigation board developed in three.js using Fable 5.',
     href: 'https://cb.lumeebooth.com',
     image: '/crime-booth.png',
   },
   {
     id: 'marketing',
     cv: 'cv-5',
-    blobColor: '#F97316', // Vibrant Orange
+    blobColor: '#F97316',
     tag: 'Marketing · Analytics · Social Media · 2026',
     tagColor: '#F97316',
     title: 'Viral Marketing Analytics Portfolio',
@@ -84,12 +92,12 @@ const CASES: CaseStudy[] = [
   {
     id: 'github',
     cv: 'cv-6',
-    blobColor: '#10B981', // Emerald Green
+    blobColor: '#10B981',
     tag: 'DBS · NDA Sanitized · 2025',
     tagColor: '#10B981',
     title: 'Github Portfolio AI Sketchbook',
     description:
-      'A single-page portfolio generated automatically from a GitHub profile and drawn entirely in black marker on paper. Made with Anthropic Claude Fable 5',
+      'A single-page portfolio generated automatically from a GitHub profile and drawn entirely in black marker on paper. Made with Anthropic Claude Fable 5.',
     href: 'https://github.hahz.live',
     image: '/github.png',
   },
@@ -98,53 +106,122 @@ const CASES: CaseStudy[] = [
 export default function WorkSection() {
   return (
     <section className="section" id="work">
-
-      {/* ── Section header ──────────────────────────────────────── */}
+      {/* Section header */}
       <div className="section-head">
         <Reveal>
           <span className="label-pill">
-            <span className="ldot" style={{ background: 'var(--bill-warm)' }} />
+            <span
+              className="ldot"
+              style={{
+                background:
+                  'var(--bill-warm)',
+              }}
+            />
             Work
           </span>
+
           <h2>
             A few things I&apos;ve built —{' '}
             <br />
-            <span className="serif">using advanced tech.</span>
+            <span className="serif">
+              using advanced tech.
+            </span>
           </h2>
         </Reveal>
       </div>
 
-      {/* ── Case study grid ─────────────────────────────────────── */}
+      {/* Case study grid */}
       <div className="work-grid">
         {CASES.map((c, i) => (
-          <Reveal key={c.id} delay={((i % 4) + 1) as 1 | 2 | 3 | 4}>
-            <a className={`case ${c.cv}`} href={c.href}>
-              <div className="canvas">
-                {/* ✅ Apply blobColor directly to the element */}
-                <div className="cv-blob" style={{ background: c.blobColor }} />
+          <Reveal
+            key={c.id}
+            delay={
+              ((i % 4) + 1) as
+                | 1
+                | 2
+                | 3
+                | 4
+            }
+          >
+            <a
+              className={`case ${c.cv}`}
+              href={c.href}
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              {/* ==========================================
+                  VISUAL CANVAS
+              ========================================== */}
+              <div
+                className="canvas"
+                style={{
+                  backgroundColor:
+                    c.blobColor,
+                  position: 'relative',
+                  overflow: 'hidden',
+                }}
+              >
+                {/* Decorative color blob */}
+                <div
+                  className="cv-blob"
+                  style={{
+                    backgroundColor:
+                      c.blobColor,
+                  }}
+                />
+
+                {/* Portfolio image */}
                 {c.image && (
                   // eslint-disable-next-line @next/next/no-img-element
-                  <img className="cv-image" src={c.image} alt="" aria-hidden />
+                  <img
+                    className="cv-image"
+                    src={c.image}
+                    alt=""
+                    aria-hidden="true"
+                    loading="lazy"
+                    style={{
+                      position: 'absolute',
+                      inset: 0,
+                      width: '100%',
+                      height: '100%',
+                      objectFit: 'cover',
+                      display: 'block',
+                      zIndex: 2,
+                    }}
+                  />
                 )}
               </div>
 
+              {/* Arrow */}
               <div className="arrow-tile">
                 <ArrowUpRight />
               </div>
 
+              {/* Metadata */}
               <div className="meta">
                 <span className="ctag">
-                  <span style={{ width: 5, height: 5, borderRadius: '50%', background: c.tagColor, flexShrink: 0 }} />
+                  <span
+                    style={{
+                      width: 5,
+                      height: 5,
+                      borderRadius: '50%',
+                      background:
+                        c.tagColor,
+                      flexShrink: 0,
+                    }}
+                  />
+
                   {c.tag}
                 </span>
+
                 <h3>{c.title}</h3>
+
                 <p>{c.description}</p>
               </div>
             </a>
           </Reveal>
         ))}
       </div>
-
     </section>
   )
 }
