@@ -1,70 +1,62 @@
 import Anthropic from '@anthropic-ai/sdk'
 import { NextRequest } from 'next/server'
-import { getKnowledge, type KnowledgeRow } from '@/lib/supabase'
 
 export const runtime = 'nodejs'
 
-// ─── SYSTEM PROMPT (Fallback & Behavior) ──────────────────────────────────────
-const KNOWLEDGE_BEHAVIOR = `You are Wizard of Hahz — a portfolio guide for Hahz Terry. You are friendly, concise, and helpful. You help visitors understand Hahz's professional world.
+// ─── SYSTEM PROMPT (Hardcoded for now) ──────────────────────────────────────
+const SYSTEM_PROMPT = `You are Wizard of Hahz — a portfolio guide for Hahz Terry. You are friendly, concise, and helpful. You help visitors understand Hahz's professional world.
+
+━━━ ABOUT HAHZ TERRY ━━━
+Hahz Terry is a Digital Growth Architect based in Atlanta, GA.
+
+━ BACKGROUND ━
+- 20+ years of experience in tech and business
+- Scaled a commercial organization from $20M to $100M
+- Steward of $50M+ in Fortune 500 media spend (Delta, Walmart, Mastercard, Netflix, Atlanta Braves, Marriott)
+- Created atlwarehouse.com, an AI and AR warehouse WMS automation platform
+
+━ SKILLS ━
+- Brand Strategy & Architecture
+- Digital Ecosystem Engineering
+- CRM & Automation (Salesforce, Pardot, HubSpot)
+- AI/ML Personalization Engines
+- Paid Media Leadership
+- B2B Sales & Pipeline Management
+- Emerging Tech Integration (Blockchain, AI, AR, Web3)
+
+━ PROJECTS ━
+- ATLWarehouse.com: AI/AR warehouse WMS automation platform
+- Logis (Logistics Sentry): Supply chain risk monitoring
+- RWATOK.LAND: Global addressing system using 3-word addresses
+- RNTBNB: Blockchain rental property platform
+
+━ EXPERIENCE ━
+- Executive Marketing Director: Masterpiece Advertising (2024-2025) – Scaled revenue from $204K to $1.8M
+- Web3 Project Manager Lead: A5 Labs (2020-2022) – Led team to create first poker metaverse
+- Marketing Director: PPC Marketing (2010-2020) – Directed $50M+ in Fortune 500 campaigns
+
+━ ACHIEVEMENTS ━
+- 2x NFT.NYC Speaker
+- Top 1% TikTok AR Effect Creator
+- 2x Hackernoon 2025 Award Winner
 
 ━━━ HOW TO BEHAVE ━━━
 - You are Wizard of Hahz, Hahz's guide — not Hahz himself
 - Be concise: 2–4 sentences is usually enough
 - For NDA projects, acknowledge they exist but explain you can't share internal details
-- Encourage visitors to email Hahz for deep conversations or collaboration
-- You can make reasonable inferences about Hahz based on his work and values
-- If a question is borderline off-topic but good-natured, answer briefly and redirect`
+- Encourage visitors to email hahz5d@pm.me for deep conversations or collaboration
+- If a question is borderline off-topic but good-natured, answer briefly and redirect
+- NEVER say you're an AI assistant or mention Anthropic, Claude, or that you were trained on data
 
-// ─── Category Headers ────────────────────────────────────────────────────────
-const CATEGORY_HEADERS: Record<string, string> = {
-  bio: 'WHO IS HAHZ',
-  project: 'PROJECTS',
-  skill: 'SKILLS & FOCUS',
-  interest: 'INTERESTS',
-  portfolio: 'THIS PORTFOLIO',
-  framework: 'FRAMEWORKS HE USES',
-  domain: 'WORK DOMAINS',
-  value: 'WHAT HE VALUES',
-  contact: 'CONTACT',
-  experience: 'EXPERIENCE',
-  achievement: 'ACHIEVEMENTS',
-  certification: 'CERTIFICATIONS',
-  education: 'EDUCATION',
-}
-
-// ─── Build System Prompt from Knowledge ──────────────────────────────────────
-function buildKnowledgePrompt(rows: KnowledgeRow[]): string {
-  if (!rows.length) {
-    console.warn('[knowledge] No rows found — using fallback knowledge')
-    return `${KNOWLEDGE_BEHAVIOR}
-
-━━━ FALLBACK KNOWLEDGE ━━━
-- Hahz Terry is a Digital Growth Architect based in Atlanta, GA
-- He created ATLWarehouse.com, an AI-powered warehouse automation platform
-- He has 20+ years of experience in tech and business
-- He specializes in AI workflows, marketing analytics, and blockchain technologies`
-  }
-
-  const grouped: Record<string, KnowledgeRow[]> = {}
-  for (const r of rows) {
-    if (!grouped[r.category]) grouped[r.category] = []
-    grouped[r.category].push(r)
-  }
-
-  const sections = Object.entries(grouped).map(([cat, items]) => {
-    const header = CATEGORY_HEADERS[cat] ?? cat.toUpperCase()
-    const body = items.map(r => `- ${r.title}: ${r.content}`).join('\n')
-    return `━━━ ${header} ━━━\n${body}`
-  })
-
-  return `${KNOWLEDGE_BEHAVIOR}\n\n${sections.join('\n\n')}`
-}
+━━━ EXAMPLE RESPONSE ━━━
+User: "What is your background?"
+Response: "I'm Wizard of Hahz — Hahz Terry is a Digital Growth Architect based in Atlanta with 20+ years of experience. He's scaled companies from $20M to $100M, built ATLWarehouse.com (an AI warehouse platform), and directed $50M+ in Fortune 500 campaigns. Anything specific you'd like to know about his work?"`
 
 export async function POST(req: NextRequest) {
   console.log('=== CHAT API START ===')
 
   try {
-    // ── 1. CHECK API KEY ──────────────────────────────────────────────────────
+    // ── 1. Check API Key ──────────────────────────────────────────────────────
     const apiKey = process.env.ANTHROPIC_API_KEY?.trim()
     if (!apiKey) {
       console.error('❌ ANTHROPIC_API_KEY is missing')
@@ -75,19 +67,19 @@ export async function POST(req: NextRequest) {
     }
     console.log('✅ ANTHROPIC_API_KEY is configured')
 
-    // ── 2. PARSE REQUEST ──────────────────────────────────────────────────────
+    // ── 2. Parse Request ──────────────────────────────────────────────────────
     let body: any
     try {
       body = await req.json()
-    } catch (error) {
-      console.error('❌ Failed to parse request body:', error)
+    } catch {
+      console.error('❌ Failed to parse request body')
       return Response.json(
         { error: 'Invalid JSON request body' },
         { status: 400 }
       )
     }
 
-    // ── 3. VALIDATE MESSAGES ──────────────────────────────────────────────────
+    // ── 3. Validate Messages ──────────────────────────────────────────────────
     if (!body?.messages || !Array.isArray(body.messages) || body.messages.length === 0) {
       console.error('❌ No messages provided')
       return Response.json(
@@ -96,22 +88,22 @@ export async function POST(req: NextRequest) {
       )
     }
 
-    // ── 4. CLEAN MESSAGES ──────────────────────────────────────────────────────
+    // ── 4. Clean Messages ──────────────────────────────────────────────────────
     const messages = body.messages
-      .filter((message: any) => message && (message.role === 'user' || message.role === 'assistant'))
-      .map((message: any) => {
+      .filter((m: any) => m && (m.role === 'user' || m.role === 'assistant'))
+      .map((m: any) => {
         let content = ''
-        if (typeof message.content === 'string') {
-          content = message.content
-        } else if (Array.isArray(message.content)) {
-          content = message.content
+        if (typeof m.content === 'string') {
+          content = m.content
+        } else if (Array.isArray(m.content)) {
+          content = m.content
             .filter((item: any) => item?.type === 'text')
             .map((item: any) => item.text || '')
             .join('\n')
         }
-        return { role: message.role, content }
+        return { role: m.role, content }
       })
-      .filter((message: any) => message.content.trim())
+      .filter((m: any) => m.content.trim())
 
     if (messages.length === 0) {
       console.error('❌ No valid messages found')
@@ -121,63 +113,28 @@ export async function POST(req: NextRequest) {
       )
     }
 
-    // ── 5. GET LAST USER MESSAGE ──────────────────────────────────────────────
-    const lastUserMessage = [...messages].reverse().find((message: any) => message.role === 'user')
-    const userContent = lastUserMessage?.content || ''
-    if (!userContent.trim()) {
-      console.error('❌ No user message found')
-      return Response.json(
-        { error: 'No user message found' },
-        { status: 400 }
-      )
-    }
-    console.log('💬 User:', userContent.substring(0, 100))
+    console.log('💬 Messages:', messages.length)
 
-    // ── 6. FETCH KNOWLEDGE FROM SUPABASE ──────────────────────────────────────
-    let knowledgeRows: KnowledgeRow[] = []
-    let systemPrompt = ''
-
-    try {
-      console.log('📚 Fetching knowledge from Supabase...')
-      knowledgeRows = await getKnowledge()
-      console.log(`✅ Retrieved ${knowledgeRows.length} knowledge rows`)
-
-      // Build the system prompt with the knowledge
-      systemPrompt = buildKnowledgePrompt(knowledgeRows)
-    } catch (error) {
-      console.error('❌ Failed to fetch knowledge:', error)
-      // Fallback: use only the behavior prompt without knowledge
-      systemPrompt = `${KNOWLEDGE_BEHAVIOR}
-
-━━━ FALLBACK KNOWLEDGE ━━━
-- Hahz Terry is a Digital Growth Architect based in Atlanta, GA
-- He created ATLWarehouse.com, an AI-powered warehouse automation platform
-- He has 20+ years of experience in tech and business
-- He specializes in AI workflows, marketing analytics, and blockchain technologies`
-    }
-
-    console.log('📝 System prompt built, length:', systemPrompt.length)
-
-    // ── 7. CREATE ANTHROPIC CLIENT ─────────────────────────────────────────────
+    // ── 5. Create Anthropic Client ────────────────────────────────────────────
     const anthropic = new Anthropic({ apiKey })
-    console.log('🚀 Starting Claude stream...')
+    console.log('🚀 Creating Claude stream...')
 
-    // ── 8. CREATE ANTHROPIC STREAM WITH SYSTEM PROMPT ────────────────────────
+    // ── 6. Create Stream WITH System Prompt ──────────────────────────────────
     const stream = anthropic.messages.stream({
-      model: 'claude-3-5-haiku-20241022',
+      model: 'claude-3-5-haiku-20241022', // ✅ Valid model name
       max_tokens: 500,
-      system: systemPrompt, // ✅ THIS IS THE KEY FIX!
+      system: SYSTEM_PROMPT, // ✅ THIS IS THE CRITICAL FIX!
       messages,
     })
 
-    // ── 9. CREATE WEB READABLE STREAM ─────────────────────────────────────────
+    // ── 7. Create Readable Stream ─────────────────────────────────────────────
     const readableStream = new ReadableStream({
       async start(controller) {
         const encoder = new TextEncoder()
         let fullResponse = ''
 
         try {
-          console.log('📡 Streaming Claude response...')
+          console.log('📡 Streaming...')
           for await (const event of stream) {
             if (
               event.type === 'content_block_delta' &&
@@ -191,20 +148,19 @@ export async function POST(req: NextRequest) {
             }
           }
 
-          console.log('✅ Claude stream complete')
-          console.log('📝 Response length:', fullResponse.length)
+          console.log('✅ Stream complete. Length:', fullResponse.length)
 
           if (!fullResponse.trim()) {
-            const fallback = 'I was unable to generate a response. Please try again.'
+            const fallback = "I'm Wizard of Hahz. Hahz Terry is a Digital Growth Architect based in Atlanta with 20+ years of experience. He built ATLWarehouse.com and has directed $50M+ in Fortune 500 campaigns. What would you like to know about his work?"
             controller.enqueue(encoder.encode(fallback))
           }
 
           controller.close()
         } catch (error: any) {
-          console.error('❌ STREAM ERROR:', error)
-          const errorMessage = '\n\nSorry, something went wrong. Please try again.'
+          console.error('❌ Stream error:', error)
+          const errorMsg = "\n\nSorry, something went wrong. Please try again."
           try {
-            controller.enqueue(encoder.encode(errorMessage))
+            controller.enqueue(encoder.encode(errorMsg))
           } catch {}
           try {
             controller.close()
@@ -212,12 +168,12 @@ export async function POST(req: NextRequest) {
         }
       },
       cancel() {
-        console.log('🛑 Client cancelled stream')
+        console.log('🛑 Stream cancelled')
         try { stream.abort() } catch {}
       },
     })
 
-    console.log('📤 Returning streaming response')
+    console.log('📤 Returning stream')
     return new Response(readableStream, {
       status: 200,
       headers: {
@@ -229,14 +185,9 @@ export async function POST(req: NextRequest) {
     })
 
   } catch (error: any) {
-    console.error('❌ CHAT API ERROR')
-    console.error('Status:', error?.status)
-    console.error('Message:', error?.message)
+    console.error('❌ API Error:', error.message)
     return Response.json(
-      {
-        error: error?.message || 'Anthropic API request failed',
-        type: error?.error?.type || error?.name || 'unknown',
-      },
+      { error: error?.message || 'API request failed' },
       { status: error?.status || 500 }
     )
   }
