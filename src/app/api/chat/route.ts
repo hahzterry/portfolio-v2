@@ -11,7 +11,8 @@ export async function POST(req: NextRequest) {
     // 1. CHECK ANTHROPIC API KEY
     // ==========================================
 
-    const apiKey = process.env.ANTHROPIC_API_KEY
+    const apiKey =
+      process.env.ANTHROPIC_API_KEY?.trim()
 
     if (!apiKey) {
       console.error(
@@ -21,9 +22,11 @@ export async function POST(req: NextRequest) {
       return Response.json(
         {
           error:
-            'ANTHROPIC_API_KEY is not configured in Vercel',
+            'ANTHROPIC_API_KEY is not configured in Vercel Production',
         },
-        { status: 500 }
+        {
+          status: 500,
+        }
       )
     }
 
@@ -35,7 +38,26 @@ export async function POST(req: NextRequest) {
     // 2. PARSE REQUEST
     // ==========================================
 
-    const body = await req.json()
+    let body: any
+
+    try {
+      body = await req.json()
+    } catch (error) {
+      console.error(
+        '❌ Failed to parse request body:',
+        error
+      )
+
+      return Response.json(
+        {
+          error:
+            'Invalid JSON request body',
+        },
+        {
+          status: 400,
+        }
+      )
+    }
 
     // ==========================================
     // 3. VALIDATE MESSAGES
@@ -46,56 +68,116 @@ export async function POST(req: NextRequest) {
       !Array.isArray(body.messages) ||
       body.messages.length === 0
     ) {
+      console.error(
+        '❌ No messages provided'
+      )
+
       return Response.json(
         {
           error:
             'messages must be a non-empty array',
         },
-        { status: 400 }
+        {
+          status: 400,
+        }
       )
     }
 
     // ==========================================
-    // 4. GET LAST USER MESSAGE
+    // 4. CLEAN MESSAGE HISTORY
     // ==========================================
 
-    const lastMessage =
-      body.messages[
-        body.messages.length - 1
-      ]
-
-    let userContent = ''
-
-    if (
-      typeof lastMessage?.content === 'string'
-    ) {
-      userContent =
-        lastMessage.content
-    } else if (
-      Array.isArray(
-        lastMessage?.content
+    const messages = body.messages
+      .filter(
+        (message: any) =>
+          message &&
+          (message.role === 'user' ||
+            message.role === 'assistant')
       )
-    ) {
-      userContent =
-        lastMessage.content
-          .filter(
-            (item: any) =>
-              item?.type === 'text'
-          )
-          .map(
-            (item: any) =>
-              item.text
-          )
-          .join('\n')
-    }
+      .map((message: any) => {
+        let content = ''
 
-    if (!userContent.trim()) {
+        // Normal string content
+        if (
+          typeof message.content ===
+          'string'
+        ) {
+          content = message.content
+        }
+
+        // Array content
+        else if (
+          Array.isArray(
+            message.content
+          )
+        ) {
+          content =
+            message.content
+              .filter(
+                (item: any) =>
+                  item?.type === 'text'
+              )
+              .map(
+                (item: any) =>
+                  item.text || ''
+              )
+              .join('\n')
+        }
+
+        return {
+          role: message.role,
+          content,
+        }
+      })
+      .filter(
+        (message: any) =>
+          message.content.trim()
+      )
+
+    if (messages.length === 0) {
+      console.error(
+        '❌ No valid messages found'
+      )
+
       return Response.json(
         {
           error:
-            'Message content is empty',
+            'No valid messages found',
         },
-        { status: 400 }
+        {
+          status: 400,
+        }
+      )
+    }
+
+    // ==========================================
+    // 5. GET LAST USER MESSAGE
+    // ==========================================
+
+    const lastUserMessage =
+      [...messages]
+        .reverse()
+        .find(
+          (message: any) =>
+            message.role === 'user'
+        )
+
+    const userContent =
+      lastUserMessage?.content || ''
+
+    if (!userContent.trim()) {
+      console.error(
+        '❌ No user message found'
+      )
+
+      return Response.json(
+        {
+          error:
+            'No user message found',
+        },
+        {
+          status: 400,
+        }
       )
     }
 
@@ -108,74 +190,195 @@ export async function POST(req: NextRequest) {
     )
 
     // ==========================================
-    // 5. CREATE ANTHROPIC CLIENT
+    // 6. CREATE ANTHROPIC CLIENT
     // ==========================================
 
     const anthropic =
       new Anthropic({
-        apiKey:
-          apiKey.trim(),
+        apiKey,
       })
 
     console.log(
-      '🚀 Calling Anthropic...'
+      '🚀 Starting Claude stream...'
     )
 
     // ==========================================
-    // 6. CALL CLAUDE
+    // 7. CREATE ANTHROPIC STREAM
     // ==========================================
 
-    const response =
-      await anthropic.messages.create({
+    const stream =
+      anthropic.messages.stream({
         model:
           'claude-haiku-4-5-20251001',
 
         max_tokens: 500,
 
-        messages: [
-          {
-            role: 'user',
-            content:
-              userContent,
-          },
-        ],
+        messages,
       })
 
+    // ==========================================
+    // 8. CREATE WEB READABLE STREAM
+    // ==========================================
+
+    const readableStream =
+      new ReadableStream({
+        async start(
+          controller
+        ) {
+          const encoder =
+            new TextEncoder()
+
+          let fullResponse = ''
+
+          try {
+            console.log(
+              '📡 Streaming Claude response...'
+            )
+
+            for await (
+              const event of stream
+            ) {
+              // Claude text streaming event
+              if (
+                event.type ===
+                  'content_block_delta' &&
+                event.delta.type ===
+                  'text_delta'
+              ) {
+                const text =
+                  event.delta.text
+
+                if (text) {
+                  fullResponse += text
+
+                  controller.enqueue(
+                    encoder.encode(
+                      text
+                    )
+                  )
+                }
+              }
+            }
+
+            console.log(
+              '✅ Claude stream complete'
+            )
+
+            console.log(
+              '📝 Response length:',
+              fullResponse.length
+            )
+
+            // Make sure the browser
+            // receives something
+            if (
+              !fullResponse.trim()
+            ) {
+              const fallback =
+                'I was unable to generate a response. Please try again.'
+
+              controller.enqueue(
+                encoder.encode(
+                  fallback
+                )
+              )
+            }
+
+            controller.close()
+          } catch (error: any) {
+            console.error(
+              '❌ STREAM ERROR:',
+              error
+            )
+
+            console.error(
+              'Status:',
+              error?.status
+            )
+
+            console.error(
+              'Message:',
+              error?.message
+            )
+
+            // IMPORTANT:
+            // If streaming has already
+            // started, don't attempt to
+            // return JSON because the
+            // response is already a stream.
+
+            const errorMessage =
+              '\n\nSorry, something went wrong while generating the response. Please try again.'
+
+            try {
+              controller.enqueue(
+                encoder.encode(
+                  errorMessage
+                )
+              )
+            } catch {
+              // Stream may already
+              // be closed
+            }
+
+            try {
+              controller.close()
+            } catch {
+              // Stream may already
+              // be closed
+            }
+          }
+        },
+
+        cancel() {
+          console.log(
+            '🛑 Client cancelled stream'
+          )
+
+          try {
+            stream.abort()
+          } catch (error) {
+            console.error(
+              'Error aborting stream:',
+              error
+            )
+          }
+        },
+      })
+
+    // ==========================================
+    // 9. RETURN STREAM
+    // ==========================================
+
     console.log(
-      '✅ Anthropic responded'
+      '📤 Returning streaming response'
     )
 
-    // ==========================================
-    // 7. EXTRACT RESPONSE
-    // ==========================================
+    return new Response(
+      readableStream,
+      {
+        status: 200,
 
-    const textBlock =
-      response.content.find(
-        (block) =>
-          block.type === 'text'
-      )
+        headers: {
+          'Content-Type':
+            'text/plain; charset=utf-8',
 
-    const reply =
-      textBlock?.type === 'text'
-        ? textBlock.text
-        : 'No response generated.'
+          'Cache-Control':
+            'no-cache, no-transform',
 
-    console.log(
-      '📝 Claude:',
-      reply.substring(
-        0,
-        100
-      )
+          'Connection':
+            'keep-alive',
+
+          'X-Content-Type-Options':
+            'nosniff',
+        },
+      }
     )
-
-    // ==========================================
-    // 8. RETURN RESPONSE
-    // ==========================================
-
-    return Response.json({
-      reply,
-    })
   } catch (error: any) {
+    // ==========================================
+    // 10. HANDLE API ERRORS
+    // ==========================================
+
     console.error(
       '❌ CHAT API ERROR'
     )
@@ -208,8 +411,7 @@ export async function POST(req: NextRequest) {
       },
       {
         status:
-          error?.status ||
-          500,
+          error?.status || 500,
       }
     )
   }
