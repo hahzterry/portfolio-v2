@@ -2,59 +2,80 @@ import Anthropic from '@anthropic-ai/sdk'
 import { NextRequest } from 'next/server'
 
 export async function POST(req: NextRequest) {
-  console.log('[test] === START ===')
-  console.log('[test] ANTHROPIC_API_KEY exists?', !!process.env.ANTHROPIC_API_KEY)
+  console.log('=== API CHAT START ===')
 
-  // 1. Check API key
+  // ── 1. Check API Key ──────────────────────────────────────────────────────
   if (!process.env.ANTHROPIC_API_KEY) {
+    console.error('❌ ANTHROPIC_API_KEY is missing')
     return new Response(
       JSON.stringify({ error: 'ANTHROPIC_API_KEY is not configured' }),
       { status: 500, headers: { 'Content-Type': 'application/json' } }
     )
   }
+  console.log('✅ API key found')
 
-  // 2. Parse request
-  let messages
+  // ── 2. Parse Request Body Safely ────────────────────────────────────────
+  let body
   try {
-    const body = await req.json()
-    messages = body.messages
-  } catch {
+    body = await req.json()
+    console.log('✅ Request parsed:', body)
+  } catch (err) {
+    console.error('❌ Failed to parse request:', err)
     return new Response(
-      JSON.stringify({ error: 'Invalid request body' }),
+      JSON.stringify({ error: 'Invalid JSON body' }),
       { status: 400, headers: { 'Content-Type': 'application/json' } }
     )
   }
 
-  const lastMessage = messages?.[messages.length - 1]?.content || 'Hello'
+  // ── 3. Validate Messages ─────────────────────────────────────────────────
+  const messages = body.messages
+  if (!messages || !Array.isArray(messages) || messages.length === 0) {
+    console.error('❌ No messages array found')
+    return new Response(
+      JSON.stringify({ error: 'No messages provided' }),
+      { status: 400, headers: { 'Content-Type': 'application/json' } }
+    )
+  }
 
-  // 3. Initialize Anthropic
+  const lastMessage = messages[messages.length - 1]
+  const userContent = lastMessage?.content || 'Hello'
+  console.log('💬 User message:', userContent)
+
+  // ── 4. Initialize Anthropic ──────────────────────────────────────────────
   const client = new Anthropic({
     apiKey: process.env.ANTHROPIC_API_KEY,
   })
 
-  console.log('[test] Calling Anthropic with message:', lastMessage)
-
+  // ── 5. Call Anthropic ─────────────────────────────────────────────────────
   try {
-    // 4. Make a simple, non-streaming call first (easier to debug)
+    console.log('🚀 Calling Anthropic...')
+
     const response = await client.messages.create({
       model: 'claude-3-5-haiku-20241022',
-      max_tokens: 100,
-      messages: [{ role: 'user', content: lastMessage }],
+      max_tokens: 150,
+      messages: [{ role: 'user', content: userContent }],
     })
 
-    const reply = response.content[0].type === 'text' ? response.content[0].text : 'No response'
+    console.log('✅ Anthropic responded')
 
-    console.log('[test] ✅ Anthropic responded:', reply.slice(0, 50))
+    const reply = response.content[0].type === 'text' 
+      ? response.content[0].text 
+      : 'No response'
 
-    // Return as JSON (not streaming) for easier testing
+    console.log('📝 Reply:', reply.slice(0, 50))
+
     return new Response(
       JSON.stringify({ reply }),
       { status: 200, headers: { 'Content-Type': 'application/json' } }
     )
+
   } catch (err) {
-    console.error('[test] ❌ Anthropic error:', err)
+    console.error('❌ Anthropic API error:', err)
     return new Response(
-      JSON.stringify({ error: (err as Error).message }),
+      JSON.stringify({ 
+        error: 'Anthropic API error', 
+        details: (err as Error).message 
+      }),
       { status: 500, headers: { 'Content-Type': 'application/json' } }
     )
   }
