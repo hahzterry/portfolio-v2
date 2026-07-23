@@ -104,7 +104,7 @@ export async function POST(req: NextRequest) {
   let guardrail: GuardrailResult = { safe: true }
   try {
     const check = await client.messages.create({
-      model: 'claude-3-haiku-20240307', // ✅ Correct model
+      model: 'claude-haiku-4-5-20251001', // ✅ Correct model
       max_tokens: 150,
       system: GUARDRAIL_SYSTEM,
       messages: [{ role: 'user', content: lastContent }],
@@ -131,7 +131,7 @@ export async function POST(req: NextRequest) {
   const recentMessages = messages.slice(-10)
 
   const stream = client.messages.stream({
-    model: 'claude-3-opus-20240229', // ✅ Correct model
+    model: 'claude-opus-4-5-20251101', // ✅ Correct model
     max_tokens: 1024,
     system: systemPrompt,
     messages: recentMessages.map(m => ({ role: m.role, content: m.content })),
