@@ -3,7 +3,7 @@ import StackRail from './StackRail'
 
 const QUOTES = [
   {
-    text: 'If you can get 1 percent better each day for one year, you’ll end up thirty-seven times better by the time you’re done.',
+    text: 'If you can get 1 percent better each day for one year, you\'ll end up thirty-seven times better by the time you\'re done.',
     author: 'James Clear, Atomic Habits',
   },
   {
@@ -43,17 +43,20 @@ export default function AboutSection() {
               <img src="/portrait/hahzterry.png" alt="Hahz Terry" />
             </div>
           </div>
+
           <p>
             I&apos;m an Atlanta-based Digital Growth Architect working at the intersection of
             educate and modernize business through automation, AI workflows and blockchain
-            technologies. I speak a various conferences, universities and podcasts on the
+            technologies. I speak at various conferences, universities and podcasts on the
             topics of advanced technology as a creator and educator.
+          </p>
+
           <p>
             My day-to-day is motivating + educating teams, building systems and
             creating solutions. My 20+ years of experience in tech + business brings a vast
             of knowledge to the table, and I enjoy sharing that knowledge with others to help
             them grow and succeed. I keep my finger on the pulse of emerging technologies
-            by building and via my Linkedin newsletters. 
+            by building and via my Linkedin newsletters.
           </p>
 
           <div className="quotes">
