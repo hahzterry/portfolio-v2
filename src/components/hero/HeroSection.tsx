@@ -31,20 +31,20 @@ export default function HeroSection() {
       {/* ── Left: copy ──────────────────────────────────────── */}
       <div className="hero-copy">
         <span className="eyebrow">
-          <span className="av">DM</span>
-          <strong>Seattle</strong> · <strong>San Diego</strong> · <strong>Jakarta</strong>
+          <span className="av">HT</span>
+          <strong>Georgia</strong> · <strong>Atlanta</strong> · <strong>Thought Leader</strong>
         </span>
 
         <h1 className="hero-title">
           Navigating the<br />
           edge between <span className="serif">finance</span>,<br />
-          <span className="serif">technology</span> &amp; <span className="serif">risk efficiency</span>.
+          <span className="serif">automation</span> &amp; <span className="serif">marketing</span>.
         </h1>
 
         <p className="hero-sub">
-          I&apos;m Daniel — a Jakarta-based Digital Growth Architect working across banking systems,
-          risk governance, automation and AI-assisted workflows. Currently building tools
-          that make complex work easier to understand, manage and move forward.
+          I&apos;m Hahz — an Atlanta-based Digital Growth Architect modernizing business, with
+          automation and AI-assisted workflows. Currently building tools that make complex work
+          easier to understand for customers, manage for teams and scale.
         </p>
 
         <div className="hero-cta">
@@ -53,7 +53,7 @@ export default function HeroSection() {
             <ArrowRight className="ar" />
           </a>
           <a className="btn btn-ghost" href="#ai">
-            Ask Dani
+            Ask Wizard of Hahz
             <ArrowUpRight className="ar" />
           </a>
         </div>
@@ -65,8 +65,8 @@ export default function HeroSection() {
           <HeroScene3D />
         </div>
         <div className="scene-caption">
-          <span>Learning node by node</span>
-          <span>in a world of knowledge</span>
+          <span>Learning day by day</span>
+          <span>19 years of vast knowledge</span>
         </div>
       </div>
 
@@ -74,19 +74,19 @@ export default function HeroSection() {
       <div className="hero-meta">
         <div className="cell">
           <div className="l">Currently</div>
-          <div className="v">Banking Digital Growth Architect</div>
+          <div className="v">Moderning Logistics</div>
         </div>
         <div className="cell">
           <div className="l">Based in</div>
-          <div className="v">Jakarta · UTC<span className="mono">+7</span></div>
+          <div className="v">Atlanta, GA · EST<span className="mono"></span></div>
         </div>
         <div className="cell">
           <div className="l">Focus</div>
-          <div className="v">IT Governance × AI</div>
+          <div className="v">Automation × AI</div>
         </div>
         <div className="cell">
           <div className="l">Latest</div>
-          <div className="v">Portfolio v2 · 2026</div>
+          <div className="v">Logis · 2026</div>
         </div>
       </div>
 

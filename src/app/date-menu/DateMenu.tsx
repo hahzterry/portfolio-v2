@@ -118,7 +118,7 @@ export default function DateMenu() {
       <main style={S.content}>
         <p className="dm-rise" style={S.eyebrow}>
           ·<br />
-          La Cena Privata di Daniel<br />
+          La Cena Privata di Hahz<br />
           ·
         </p>
 

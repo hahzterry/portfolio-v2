@@ -25,9 +25,9 @@ const instrumentSerif = Instrument_Serif({
 })
 
 export const metadata: Metadata = {
-  title: 'Daniel Muljono',
+  title: 'Hahz Terry',
   description:
-    'Jakarta-based Digital Growth Architect working across banking systems, risk governance, automation and AI-assisted workflows.',
+    'Atlanta-based Digital Growth Architect modernizing business automation and AI-assisted workflows.',
   icons: {
     icon: '/favicon.ico',
     shortcut: '/favicon.ico',

@@ -154,19 +154,19 @@ function StorageMark({ color }: { color: string }) {
 const LAYERS = {
   haiku: {
     title: 'Outer layer · Claude Haiku',
-    sub: "A fast guardrail model. It reads every incoming message and decides if it's a legitimate question about Daniel's work — anything off-topic or unsafe gets blocked before the inner layer ever sees it.",
+    sub: "A fast guardrail model. It reads every incoming message and decides if it's a legitimate question about Hahz Terry's work — anything off-topic or unsafe gets blocked before the inner layer ever sees it.",
     color: 'var(--turq)',
     icon: (c: string) => <HaikuMark color={c} glyphId="haiku" />,
   },
   opus: {
     title: 'Inner layer · Claude Opus',
-    sub: 'The reasoning brain. Once the guardrail passes, Opus streams back the answer using everything it knows about Daniel — projects, stack, background, and tone.',
+    sub: 'The reasoning brain. Once the guardrail passes, Opus streams back the answer using everything it knows about Hahz Terry — projects, stack, background, and tone.',
     color: 'var(--purple)',
     icon: (c: string) => <ClaudeMark color={c} glyphId="opus" />,
   },
   kb: {
     title: 'Storage layer · Supabase',
-    sub: "A Supabase table that holds Daniel's facts — projects, skills, stack, contact info. Opus pulls the rows on every request and weaves them into its prompt, so updating Dani's knowledge means editing rows, not code.",
+    sub: "A Supabase table that holds Hahz Terry's facts — projects, skills, stack, contact info. Opus pulls the rows on every request and weaves them into its prompt, so updating Hahz's knowledge means editing rows, not code.",
     color: 'var(--bill-warm)',
     icon: (c: string) => <StorageMark color={c} />,
   },
@@ -226,7 +226,7 @@ export default function AgentCard() {
 
       <AnimatePresence mode="wait">
         <motion.h3 key={layer ?? 'default'} {...TEXT_FADE}>
-          {active ? active.title : 'Meet Dani'}
+          {active ? active.title : 'Meet Wizard of Hahz'}
         </motion.h3>
       </AnimatePresence>
 

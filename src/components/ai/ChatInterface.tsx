@@ -137,12 +137,12 @@ export default function ChatInterface() {
               strokeLinecap="round"
               strokeLinejoin="round"
             />
-            {/* A tiny accent dot — Dani's "spark" */}
+            {/* A tiny accent dot — Hahz's "spark" */}
             <circle cx="16" cy="16" r="1.1" fill="#fff" opacity="0.9" />
           </svg>
         </div>
         <div>
-          <div className="ch-name">Dani — Portfolio AI</div>
+          <div className="ch-name">Wizard of Hahz — Portfolio AI</div>
           <div className="ch-status">{loading ? 'typing…' : 'online'}</div>
         </div>
         <div className="menu">⋯</div>
@@ -166,7 +166,7 @@ export default function ChatInterface() {
           ref={inputRef}
           className="placeholder"
           style={{ background: 'transparent', border: 'none', outline: 'none', color: 'var(--t1)', fontSize: 14 }}
-          placeholder="Ask Dani something…"
+          placeholder="Ask Wizard of Hahz something…"
           value={input}
           onChange={e => setInput(e.target.value)}
           onKeyDown={onKey}

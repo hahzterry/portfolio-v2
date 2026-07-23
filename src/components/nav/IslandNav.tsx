@@ -151,7 +151,7 @@ export default function IslandNav() {
 
       <div className="brand">
         <span className="dot" />
-        <span className="name">Daniel Muljono</span>
+        <span className="name">Hahz Terry</span>
       </div>
 
       {LINKS.map((link, i) => (
