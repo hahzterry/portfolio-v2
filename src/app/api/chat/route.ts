@@ -2,17 +2,14 @@ import Anthropic from '@anthropic-ai/sdk'
 import { NextRequest } from 'next/server'
 import { logChat, getKnowledge, type KnowledgeRow } from '@/lib/supabase'
 
-const client = new Anthropic()
-
 // ─── Agent 1: Guardrail ───────────────────────────────────────────────────────
-// Fast Haiku call — decides safe / unsafe before anything reaches the knowledge engine.
 const GUARDRAIL_SYSTEM = `You are a safety guardrail for a portfolio assistant called Wizard of Hahz.
 Classify whether the user's message is appropriate for a professional portfolio chatbot.
 
 SAFE — return {"safe":true}:
 - Questions about Hahz's background, skills, experience, career, or personality
 - Questions about his projects, work, or the technologies he uses
-- Questions about his interests (finance, stocks, options, AI, predication markets)
+- Questions about his interests (finance, stocks, options, AI, prediction markets)
 - How to contact or work with Hahz
 - Friendly conversation starters or general curiosity about his work
 - Questions about this portfolio site
@@ -29,8 +26,6 @@ Respond ONLY with valid JSON: {"safe":true} or {"safe":false,"reason":"..."}.
 No other text.`
 
 // ─── Agent 2: Knowledge Engine ────────────────────────────────────────────────
-// Behaviour stays static. The actual *knowledge* now lives in Supabase and is
-// fetched per request, so updating Hahz's facts means editing rows, not code.
 const KNOWLEDGE_BEHAVIOR = `You are Wizard of Hahz — a portfolio guide for Hahz Terry. You are friendly, concise, and helpful. You help visitors understand Hahz's professional world.
 
 ━━━ HOW TO BEHAVE ━━━
@@ -41,7 +36,6 @@ const KNOWLEDGE_BEHAVIOR = `You are Wizard of Hahz — a portfolio guide for Hah
 - You can make reasonable inferences about Hahz based on his work and values
 - If a question is borderline off-topic but good-natured, answer briefly and redirect`
 
-// Pretty section headers per category (anything missing falls back to UPPERCASE)
 const CATEGORY_HEADERS: Record<string, string> = {
   bio:        'WHO IS HAHZ',
   project:    'PROJECTS',
@@ -57,7 +51,6 @@ const CATEGORY_HEADERS: Record<string, string> = {
 function buildKnowledgePrompt(rows: KnowledgeRow[]): string {
   if (!rows.length) return KNOWLEDGE_BEHAVIOR
 
-  // Group rows by category in the same order they were sorted by Supabase
   const grouped: Record<string, KnowledgeRow[]> = {}
   for (const r of rows) {
     if (!grouped[r.category]) grouped[r.category] = []
@@ -86,21 +79,32 @@ interface GuardrailResult {
 
 // ─── Route handler ────────────────────────────────────────────────────────────
 export async function POST(req: NextRequest) {
+  // Validate API key exists
+  if (!process.env.ANTHROPIC_API_KEY) {
+    return new Response(
+      JSON.stringify({ error: 'ANTHROPIC_API_KEY is not configured' }),
+      { status: 500 }
+    )
+  }
+
+  const client = new Anthropic({
+    apiKey: process.env.ANTHROPIC_API_KEY,
+  })
+
   const { messages }: { messages: ChatMessage[] } = await req.json()
 
   if (!messages?.length) {
     return new Response(JSON.stringify({ error: 'No messages provided' }), { status: 400 })
   }
 
-  // Last user turn is what the guardrail inspects
   const lastUser = [...messages].reverse().find(m => m.role === 'user')
   const lastContent = typeof lastUser?.content === 'string' ? lastUser.content : ''
 
-  // ── Agent 1: Guardrail (Haiku — fast, cheap) ──────────────────────────────
+  // ── Agent 1: Guardrail (Haiku) ──────────────────────────────────────────────
   let guardrail: GuardrailResult = { safe: true }
   try {
     const check = await client.messages.create({
-      model: 'claude-haiku-4-5',
+      model: 'claude-3-haiku-20240307', // ✅ Correct model
       max_tokens: 150,
       system: GUARDRAIL_SYSTEM,
       messages: [{ role: 'user', content: lastContent }],
@@ -108,12 +112,10 @@ export async function POST(req: NextRequest) {
     const raw = check.content[0].type === 'text' ? check.content[0].text : ''
     guardrail = JSON.parse(raw)
   } catch {
-    // Fail open — if the guardrail errors, let the message through
-    guardrail = { safe: true }
+    guardrail = { safe: true } // Fail open
   }
 
   if (!guardrail.safe) {
-    // Log blocked attempts so you can see what visitors are trying
     logChat({ question: lastContent, answer: '', blocked: true }).catch(() => {})
     return new Response(JSON.stringify({ blocked: true }), {
       status: 200,
@@ -121,16 +123,18 @@ export async function POST(req: NextRequest) {
     })
   }
 
-  // ── Agent 2: Knowledge Engine (Opus — streams back) ───────────────────────
-  // Pull Hahz's facts from Supabase and weave them into the system prompt
+  // ── Agent 2: Knowledge Engine (Opus) ──────────────────────────────────────
   const knowledge = await getKnowledge()
   const systemPrompt = buildKnowledgePrompt(knowledge)
 
+  // Limit history to last 10 messages to manage costs
+  const recentMessages = messages.slice(-10)
+
   const stream = client.messages.stream({
-    model: 'claude-opus-4-7',
+    model: 'claude-3-opus-20240229', // ✅ Correct model
     max_tokens: 1024,
     system: systemPrompt,
-    messages: messages.map(m => ({ role: m.role, content: m.content })),
+    messages: recentMessages.map(m => ({ role: m.role, content: m.content })),
   })
 
   const readable = new ReadableStream({
@@ -149,7 +153,6 @@ export async function POST(req: NextRequest) {
         }
       } finally {
         controller.close()
-        // Log after stream ends — non-blocking, never delays the response
         logChat({ question: lastContent, answer: fullAnswer, blocked: false }).catch(() => {})
       }
     },

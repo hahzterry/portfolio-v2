@@ -17,76 +17,76 @@ interface CaseStudy {
   title: string
   description: string
   href: string
-  image?: string   // optional foreground imagery for the canvas
+  image?: string
 }
 
 const CASES: CaseStudy[] = [
   {
     id: 'open-claw',
     cv: 'cv-1',
-    blobColor: 'var(--turq)',
+    blobColor: '#5FE5D3', // Turquoise
     tag: 'Logistics · Automation · 2026',
-    tagColor: 'var(--turq)',
+    tagColor: '#5FE5D3',
     title: 'Logis',
     description:
-      'Supply chain teams use Logistics Sentry to monitor operational risks across multiple ports and carriers simultaneously. ',
+      'Supply chain teams use Logistics Sentry to monitor operational risks across multiple ports and carriers simultaneously.',
     href: 'https://logis.atlwarehouse.com',
     image: '/logis-atl.png',
   },
   {
     id: 'glean-ai-workflow',
     cv: 'cv-2',
-    blobColor: 'var(--bill-warm)',
+    blobColor: '#FF7A8A', // Soft Coral
     tag: 'Logistics · Maps · 2025',
-    tagColor: 'var(--bill-warm)',
+    tagColor: '#FF7A8A',
     title: '3 Word Address Map',
     description:
       'RWATOK.LAND is a global addressing system that divides the world into 16.4 sq ft x 16.4 sq ft squares and assigns each square a unique combination of three words ///keep.it.simple example. This map visualizes the locations of warehouses, ports, and other logistics hubs using this system.',
     href: 'https://rwatok.land',
     image: '/3wa.png',
   },
-    {
+  {
     id: 'rntbnb',
     cv: 'cv-3',
-    blobColor: 'var(--turq)',
-    tag: 'Blockchain · Toursism · 2025',
-    tagColor: 'var(--turq)',
+    blobColor: '#F5A623', // Warm Amber
+    tag: 'Blockchain · Tourism · 2025',
+    tagColor: '#F5A623',
     title: 'RNTBNB',
     description:
       'QIE blockchain network for rental property management and tourism. RNTBNB is a decentralized platform that allows property owners to list their commercial real estate properties for rent, and travelers to book accommodations using cryptocurrency.',
     href: 'https://rntbnb.com',
     image: '/rntbnb.png',
   },
-    {
+  {
     id: 'crime-booth',
     cv: 'cv-4',
-    blobColor: 'var(--bill-warm)',
+    blobColor: '#8B5CF6', // Soft Purple
     tag: 'Game · Claude Fable 5 · AI',
-    tagColor: 'var(--bill-warm)',
+    tagColor: '#8B5CF6',
     title: 'Crime Booth',
     description:
       'A digital crime investigation board developed in three.js using Fable 5',
     href: 'https://cb.lumeebooth.com',
     image: '/crime-booth.png',
   },
-    {
+  {
     id: 'marketing',
     cv: 'cv-5',
-    blobColor: 'var(--turq)',
+    blobColor: '#F97316', // Vibrant Orange
     tag: 'Marketing · Analytics · Social Media · 2026',
-    tagColor: 'var(--turq)',
+    tagColor: '#F97316',
     title: 'Viral Marketing Analytics Portfolio',
     description:
-      'View my portfolion of platform marketing analytics dashboards and TikTok, Instagram, Facebooksocial media analytics.',
+      'View my portfolio of platform marketing analytics dashboards and TikTok, Instagram, Facebook social media analytics.',
     href: 'https://pitch.com/v/hahz-i75n75',
     image: '/viral-marketing.png',
   },
-      {
+  {
     id: 'github',
     cv: 'cv-6',
-    blobColor: 'var(--bill-warm)',
+    blobColor: '#10B981', // Emerald Green
     tag: 'DBS · NDA Sanitized · 2025',
-    tagColor: 'var(--bill-warm)',
+    tagColor: '#10B981',
     title: 'Github Portfolio AI Sketchbook',
     description:
       'A single-page portfolio generated automatically from a GitHub profile and drawn entirely in black marker on paper. Made with Anthropic Claude Fable 5',
@@ -112,7 +112,6 @@ export default function WorkSection() {
             <span className="serif">using advanced tech.</span>
           </h2>
         </Reveal>
-
       </div>
 
       {/* ── Case study grid ─────────────────────────────────────── */}
